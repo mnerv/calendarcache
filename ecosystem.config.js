@@ -6,7 +6,8 @@ module.exports = {
       // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
       instances: 1,
       autorestart: true,
-      watch: true,
+      watch: ['server.js', 'app.js'],
+      ignore_watch: ['data', 'node_modules'],
       max_memory_restart: '1G',
       env: {
         PORT: 3475,
