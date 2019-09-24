@@ -33,16 +33,42 @@ app.use((req, res, next) => {
 })
 
 // functions
+function getFormatedDate() {
+  let cTime = new Date()
+  let tmp = cTime.getFullYear() + '-'
+  tmp +=
+    (cTime.getMonth() + 1).toString().length > 1
+      ? (cTime.getMonth() + 1).toString()
+      : '0' + (cTime.getMonth() + 1).toString()
+  tmp += '-'
+  tmp +=
+    cTime.getDate().toString().length > 1
+      ? cTime.getDate().toString()
+      : '0' + cTime.getDate().toString()
+  tmp += ' '
+  tmp +=
+    cTime.getHours().toString().length > 1
+      ? cTime.getHours().toString()
+      : '0' + cTime.getHours().toString()
+  tmp += ':'
+  tmp +=
+    cTime.getMinutes().toString().length > 1
+      ? cTime.getMinutes().toString()
+      : '0' + cTime.getMinutes().toString()
+
+  return tmp
+}
+
 async function getCalendar() {
   //https://schema.mau.se/setup/jsp/Schema.jsp?startDatum=idag&intervallTyp=m&intervallAntal=6&sprak=SV&sokMedAND=true&forklaringar=true&resurser=p.THMMA19h
   let link =
     'https://schema.mau.se/setup/jsp/Schema.jsp?startDatum=idag&intervallTyp=m&intervallAntal=6&sprak=SV&sokMedAND=true&forklaringar=true&resurser=p.THMMA19h'
 
-  link = 'http://localhost:4000'
+  // link = 'http://localhost:4000'
 
   request(link, (err, resp, body) => {
+    console.log(new Date().toLocaleString())
     console.log('error', err)
-
     console.log('statusCode:', resp && resp.statusCode) // Print the response status code if a response was received
 
     if (!err && resp.statusCode == 200) {
@@ -168,6 +194,7 @@ async function getCalendar() {
           let tmpDesc = 'Moment: ' + lessonInfo
           tmpDesc += '\nGroup: ' + group
           tmpDesc += '\nLast Updated: ' + lastUpdated
+          tmpDesc += '\nCache Time: ' + getFormatedDate()
 
           let event = {
             start: [
