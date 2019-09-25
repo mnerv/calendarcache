@@ -72,7 +72,7 @@ async function getCalendar() {
     console.log('statusCode:', resp && resp.statusCode) // Print the response status code if a response was received
 
     if (!err && resp.statusCode == 200) {
-      fs.writeFileSync(__dirname + '/test/bruh.html', body)
+      // fs.writeFileSync(__dirname + '/test/bruh.html', body)
 
       const dom = new JSDOM(body)
 
