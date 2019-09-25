@@ -9,6 +9,12 @@ const request = require('request')
 const fs = require('fs')
 const ics = require('ics')
 
+if (!fs.existsSync(__dirname + '/data')) fs.mkdirSync(__dirname + '/data')
+if (!fs.existsSync(__dirname + '/data/ics'))
+  fs.mkdirSync(__dirname + '/data/ics')
+if (!fs.existsSync(__dirname + '/data/csv'))
+  fs.mkdirSync(__dirname + '/data/csv')
+
 app.use(morgan('dev'))
 app.use(
   bodyParser.urlencoded({
