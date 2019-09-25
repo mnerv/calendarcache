@@ -6,6 +6,8 @@ const fs = require('fs')
 
 const getCalendar = require('./functions/reqcalendar.js')
 
+let link =
+  'https://schema.mau.se/setup/jsp/Schema.jsp?startDatum=idag&intervallTyp=m&intervallAntal=6&sprak=SV&sokMedAND=true&forklaringar=true&resurser=p.THMMA19h'
 createPrimaryFolders()
 
 app.use(morgan('dev'))
@@ -42,8 +44,6 @@ function createPrimaryFolders() {
 
 // routes
 app.get('/', (req, res, next) => {
-  let link =
-    'https://schema.mau.se/setup/jsp/Schema.jsp?startDatum=idag&intervallTyp=m&intervallAntal=6&sprak=SV&sokMedAND=true&forklaringar=true&resurser=p.THMMA19h'
   getCalendar(link).then(() => {
     res.status(200).json({ msg: 'it works, I think' })
   })
