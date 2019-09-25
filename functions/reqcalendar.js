@@ -182,7 +182,7 @@ async function getCalendar(link) {
     console.log('statusCode:', resp && resp.statusCode) // Print the response status code if a response was received
 
     if (!err && resp.statusCode == 200) {
-      fs.writeFileSync(rootPath + '/bruh.html', body)
+      // fs.writeFileSync(rootPath + '/bruh.html', body)
 
       let csv = convertCSV(body)
 

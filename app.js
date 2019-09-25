@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const fs = require('fs')
 
-const testCal = require('./functions/reqcalendar.js')
+const getCalendar = require('./functions/reqcalendar.js')
 
 createPrimaryFolders()
 
@@ -42,18 +42,20 @@ function createPrimaryFolders() {
 
 // routes
 app.get('/', (req, res, next) => {
-  testCal('http://localhost:4000').then(() => {
+  let link =
+    'https://schema.mau.se/setup/jsp/Schema.jsp?startDatum=idag&intervallTyp=m&intervallAntal=6&sprak=SV&sokMedAND=true&forklaringar=true&resurser=p.THMMA19h'
+  getCalendar(link).then(() => {
     res.status(200).json({ msg: 'it works, I think' })
   })
 })
 
 app.get('/ics', (req, res, next) => {
-  // getCalendar().then(() => {
-  //   res.status(200).sendFile(__dirname + '/data/ics/latest.ics')
-  // })
-  res.status(200).json({
-    msg: 'sorry nothing here yet :('
+  getCalendar(link).then(() => {
+    res.status(200).sendFile(__dirname + '/data/ics/latest.ics')
   })
+  // res.status(200).json({
+  //   msg: 'sorry nothing here yet :('
+  // })
 })
 
 // Default routes
