@@ -170,27 +170,27 @@ function createICS(events) {
       console.log(error)
       return
     }
-
     fs.writeFileSync(rootPath + '/data/ics/latest.ics', value)
   })
 }
 
 async function getCalendar(link) {
-  request(link, (err, resp, body) => {
-    console.log(new Date().toLocaleString())
-    console.log('error', err)
-    console.log('statusCode:', resp && resp.statusCode) // Print the response status code if a response was received
+  const promise = new Promise((resolve, reject) => {
+    request(link, (err, resp, body) => {
+      let statusCode = resp && resp.statusCode
 
-    if (!err && resp.statusCode == 200) {
-      // fs.writeFileSync(rootPath + '/bruh.html', body)
+      resolve({ error: err, statusCode })
 
-      let csv = convertCSV(body)
+      if (!err && resp.statusCode == 200) {
+        let csv = convertCSV(body)
+        let events = createEvents(csv)
 
-      let events = createEvents(csv)
-
-      createICS(events)
-    }
+        createICS(events)
+      }
+    })
   })
+
+  return promise
 }
 
 module.exports = getCalendar

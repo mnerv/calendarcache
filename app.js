@@ -3,11 +3,16 @@ const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const fs = require('fs')
+const path = require('path')
+const db = require('nedb')
 
 const getCalendar = require('./functions/reqcalendar.js')
 
 let link =
   'https://schema.mau.se/setup/jsp/Schema.jsp?startDatum=idag&intervallTyp=m&intervallAntal=6&sprak=SV&sokMedAND=true&forklaringar=true&resurser=p.THMMA19h'
+
+link = 'http://localhost:4000'
+
 createPrimaryFolders()
 
 app.use(morgan('dev'))
@@ -17,7 +22,6 @@ app.use(
   })
 )
 app.use(bodyParser.json())
-
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
   res.header(
@@ -33,32 +37,45 @@ app.use((req, res, next) => {
   next()
 })
 
-// functions
+app.use('/', express.static(path.join(__dirname, 'page')))
+
+/////////////////// Functions /////////////////////
 function createPrimaryFolders() {
-  if (!fs.existsSync(__dirname + '/data')) fs.mkdirSync(__dirname + '/data')
-  if (!fs.existsSync(__dirname + '/data/ics'))
-    fs.mkdirSync(__dirname + '/data/ics')
-  if (!fs.existsSync(__dirname + '/data/csv'))
-    fs.mkdirSync(__dirname + '/data/csv')
+  const rootData = path.join(__dirname, 'data')
+  const icsPath = path.join(rootData, 'ics')
+  const csvPath = path.join(rootData, 'csv')
+
+  if (!fs.existsSync(rootData)) fs.mkdirSync(rootData)
+  if (!fs.existsSync(icsPath)) fs.mkdirSync(icsPath)
+  if (!fs.existsSync(csvPath)) fs.mkdirSync(csvPath)
 }
 
-// routes
-app.get('/', (req, res, next) => {
-  getCalendar(link).then(() => {
+////////////////////// ROUTES //////////////////////
+app.get('/status', (req, res, next) => {
+  getCalendar(link).then(value => {
+    const timelog = new Date().toLocaleString()
+    console.log('\x1b[34m' + timelog + '\x1b[0m')
+    if (value.error) {
+      console.log(
+        '\x1b[31m/ / / / / / / / / / / / / ERROR / / / / / / / / / / / / /\x1b[0m'
+      )
+      console.log(value.error)
+      console.log(
+        '\x1b[31m/ / / / / / / / / / / / / ERROR / / / / / / / / / / / / /\x1b[0m'
+      )
+    } else console.log('statusCode:', '\x1b[33m', value.statusCode)
+
     res.status(200).json({ msg: 'it works, I think' })
   })
 })
 
-app.get('/ics', (req, res, next) => {
-  getCalendar(link).then(() => {
+app.get('/latest.ics', (req, res, next) => {
+  getCalendar(link).then((err, val) => {
     res.status(200).sendFile(__dirname + '/data/ics/latest.ics')
   })
-  // res.status(200).json({
-  //   msg: 'sorry nothing here yet :('
-  // })
 })
 
-// Default routes
+////////////////// Default routes //////////////////
 app.use((req, res, next) => {
   const error = new Error('Not found')
   error.status = 404
