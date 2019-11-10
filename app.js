@@ -12,7 +12,7 @@ const getCalendar = require('./functions/reqcalendar.js')
 let link =
   'https://schema.mau.se/setup/jsp/Schema.jsp?startDatum=idag&intervallTyp=m&intervallAntal=6&sprak=SV&sokMedAND=true&forklaringar=true&resurser=p.THMMA19h'
 
-link = 'http://localhost:4000'
+// link = 'http://localhost:4000'
 
 createPrimaryFolders()
 
@@ -23,7 +23,6 @@ app.use(
   })
 )
 app.use(bodyParser.json())
-// app.use(cors())
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
   res.header(
