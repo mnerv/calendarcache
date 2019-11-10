@@ -23,6 +23,9 @@
           spellcheck="false"
           :disabled="true"
         />
+        <button class="copybtn">
+          <img src="../assets/copyicon.svg" alt srcset />
+        </button>
       </div>
       <div class="extras-container" v-if="false">
         <button>SUBSCRIBE</button>
@@ -42,5 +45,8 @@ export default {
   display: grid;
   grid-template-columns: 5fr auto;
   gap: 0;
+}
+
+.copyicon {
 }
 </style>
