@@ -49,7 +49,7 @@ app.get('/', (req, res, next) => {
   })
 })
 
-app.get('/lates.ics', (req, res, next) => {
+app.get('/latest.ics', (req, res, next) => {
   getCalendar(link).then(() => {
     res.status(200).sendFile(__dirname + '/data/ics/latest.ics')
   })
