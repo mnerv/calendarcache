@@ -84,6 +84,7 @@ function createEvents(csv) {
               let dateString = (dataArray[i] + '-' + year)
                 .replace(/ /g, '-')
                 .replace('Okt', 'Oct')
+                .replace('Maj', 'May')
 
               currentDate = new Date(dateString)
               lastDate = new Date(dateString)
