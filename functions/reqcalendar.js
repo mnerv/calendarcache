@@ -84,6 +84,7 @@ function createEvents(csv) {
               let dateString = (dataArray[i] + '-' + year)
                 .replace(/ /g, '-')
                 .replace('Okt', 'Oct')
+                .replace('Maj', 'May')
 
               currentDate = new Date(dateString)
               lastDate = new Date(dateString)
@@ -94,12 +95,14 @@ function createEvents(csv) {
             startEnd = dataArray[i].split('-')
           } else if (currentHeader == 'Kurs.grp') {
             eventTitle = dataArray[i]
+            eventTitle = eventTitle.replace(/;| ;/g, ',')
           } else if (currentHeader == 'Grupp') {
             group = dataArray[i]
           } else if (currentHeader == 'Lokal') {
             eventLocation = dataArray[i]
           } else if (currentHeader == 'Moment') {
             lessonInfo = dataArray[i]
+            // lessonInfo = lessonInfo.replace(/<br>/g, ' | ')
           } else if (currentHeader == 'Uppdat.') {
             lastUpdated = dataArray[i]
           }
@@ -120,9 +123,11 @@ function createEvents(csv) {
       timeString += 'T'
 
       let startTimeS = timeString + startEnd[0]
+
       let endTimeArr = startEnd[1].split(':')
 
       let eventSTime = new Date(startTimeS.toString())
+
       let eventETime = new Date(
         currentDate.getFullYear(),
         currentDate.getMonth(),
@@ -131,10 +136,10 @@ function createEvents(csv) {
         parseInt(endTimeArr[1])
       )
 
-      let tmpDesc = 'Moment: ' + lessonInfo
-      tmpDesc += '\nGroup: ' + group
-      tmpDesc += '\nLast Updated: ' + lastUpdated
-      tmpDesc += '\nLast Cache: ' + getFormatedTime()
+      let description = 'Moment: ' + lessonInfo
+      if (group != ' ') description += '\nGroup: ' + group
+      description += '\nLast Updated: ' + lastUpdated
+      description += '\nLast Cache: ' + getFormatedTime()
 
       let event = {
         start: [
@@ -153,7 +158,7 @@ function createEvents(csv) {
         ],
         startOutputType: 'local',
         title: eventTitle,
-        description: tmpDesc,
+        description: description,
         location: eventLocation,
         status: 'CONFIRMED'
       }
