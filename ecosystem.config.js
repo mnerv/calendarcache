@@ -1,20 +1,20 @@
 module.exports = {
   apps: [
     {
-      name: 'CALSUB',
+      name: 'calsub',
       script: 'server.js',
       // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
       instances: 1,
       autorestart: true,
-      watch: ['server.js', 'app.js'],
+      watch: ['server.js', 'backend'],
       ignore_watch: ['data', 'node_modules'],
       max_memory_restart: '1G',
       env: {
         PORT: 3475,
-        NODE_ENV: 'development'
+        NODE_ENV: 'dev'
       },
       env_production: {
-        NODE_ENV: 'production'
+        NODE_ENV: 'prod'
       }
     }
   ],

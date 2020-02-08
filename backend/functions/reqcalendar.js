@@ -6,7 +6,7 @@ const ics = require('ics')
 const path = require('path')
 const getFormatedTime = require('./formatedTime')
 
-const rootPath = path.dirname(require.main.filename)
+const { rootDir } = require('../../configs/env.config')
 
 function convertCSV(htmlbody) {
   const dom = new JSDOM(htmlbody)
@@ -169,33 +169,32 @@ function createEvents(csv) {
   return events
 }
 
-function createICS(events) {
+function createICS(events, filename) {
   ics.createEvents(events, (error, value) => {
     if (error) {
       console.log(error)
       return
     }
-    fs.writeFileSync(rootPath + '/data/ics/latest.ics', value)
+
+    fs.writeFileSync(path.join(rootDir, '/data/ics', filename + '.ics'), value)
   })
 }
 
-async function getCalendar(link) {
-  const promise = new Promise((resolve, reject) => {
+async function getCalendar(link, filename) {
+  return new Promise((resolve, reject) => {
     request(link, (err, resp, body) => {
       let statusCode = resp && resp.statusCode
-
-      resolve({ error: err, statusCode })
 
       if (!err && resp.statusCode == 200) {
         let csv = convertCSV(body)
         let events = createEvents(csv)
 
-        createICS(events)
+        createICS(events, filename)
       }
+
+      resolve({ error: err, statusCode })
     })
   })
-
-  return promise
 }
 
 module.exports = getCalendar
