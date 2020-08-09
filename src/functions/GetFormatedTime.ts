@@ -1,4 +1,4 @@
-function getFormatedTime() {
+function getFormatedTime(): string {
   let cTime = new Date()
   let formated = cTime.getFullYear() + '-'
   formated +=

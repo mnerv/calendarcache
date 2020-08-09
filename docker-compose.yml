@@ -5,5 +5,7 @@ services:
     image: redis
     container_name: calendar_redis
     restart: always
+    volumes:
+      - ./data/cache:/data
     ports:
       - 6379:6379

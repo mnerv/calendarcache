@@ -1,6 +1,8 @@
 import { JSDOM } from 'jsdom'
 import getFormatedTime from '../GetFormatedTime'
 
+const URL_SIG = 'https://schema.mau.se/setup/jsp/Schema.jsp'
+
 /**
  * Parse html body to csv (Comma-separated values)
  * @param html html body in string
@@ -167,4 +169,4 @@ function createEvent(csv: string[]) {
   return events
 }
 
-export default { HTMLToCSV, createEvent }
+export default { HTMLToCSV, createEvent, URL_SIG }
