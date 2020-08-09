@@ -1,12 +1,6 @@
-# Dependency directories
-node_modules/
-
-data
-test
+# Directories
+node_modules
 dist
-
-# nuxt.js build output
-.nuxt
-
-# macOS
-.DS_Store
+build
+lib
+data

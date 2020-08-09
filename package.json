@@ -4,9 +4,10 @@
   "description": "calendar cache server.",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "build": "nuxt build -c ./configs/nuxt.config",
-    "start": "cross-env NODE_ENV=production node server.js"
+    "dev": "nodemon src/app.ts",
+    "build": "tsc",
+    "start": "node build/app.js",
+    "clean": "rimraf build dist lib"
   },
   "author": "KTheXIII",
   "license": "ISC",
@@ -15,21 +16,23 @@
     "url": "git@github.com:KTheXIII/calendarsub.git"
   },
   "dependencies": {
-    "bluebird": "^3.7.2",
-    "body-parser": "^1.19.0",
-    "consola": "^2.11.3",
+    "consola": "^2.15.0",
     "cors": "^2.8.5",
     "cross-env": "^7.0.0",
     "express": "^4.17.1",
     "ics": "^2.18.0",
     "jsdom": "^15.1.1",
-    "morgan": "^1.9.1",
-    "nuxt": "^2.11.0",
     "redis": "^2.8.0",
-    "request": "^2.88.0",
+    "rimraf": "^3.0.2",
     "sequelize": "^5.21.3"
   },
   "devDependencies": {
-    "nodemon": "^1.19.2"
+    "@types/express": "^4.17.7",
+    "@types/jsdom": "^16.2.3",
+    "@types/node": "^14.0.27",
+    "@types/request": "^2.48.5",
+    "nodemon": "^1.19.2",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
   }
 }

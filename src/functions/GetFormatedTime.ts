@@ -24,4 +24,4 @@ function getFormatedTime() {
   return formated
 }
 
-module.exports = getFormatedTime
+export default getFormatedTime
