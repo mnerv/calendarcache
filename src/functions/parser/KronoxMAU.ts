@@ -1,22 +1,18 @@
-const jsdom = require('jsdom')
-const { JSDOM } = jsdom
-const request = require('request')
-const fs = require('fs')
-const ics = require('ics')
-const path = require('path')
-const getFormatedTime = require('./formatedTime')
+import { JSDOM } from 'jsdom'
+import getFormatedTime from '../GetFormatedTime'
 
-const rootPath = path.dirname(require.main.filename)
+const URL_SIG = 'https://schema.mau.se/setup/jsp/Schema.jsp'
 
-function convertCSV(htmlbody) {
-  const dom = new JSDOM(htmlbody)
-
+/**
+ * Parse html body to csv (Comma-separated values)
+ * @param html html body in string
+ */
+function HTMLToCSV(html: string) {
+  const dom = new JSDOM(html)
   const table = dom.window.document.querySelector('.schemaTabell')
 
-  const tbody = table.querySelector('tbody')
-
   let csv = []
-  let rows = tbody.querySelectorAll('tr')
+  let rows = table.querySelectorAll('tr')
 
   for (let i = 0; i < rows.length; i++) {
     let row = []
@@ -51,15 +47,15 @@ function convertCSV(htmlbody) {
   return csv
 }
 
-function createEvents(csv) {
-  let headers = csv[0].split(',')
-  let datas = csv.slice(2)
+function createEvent(csv: string[]) {
+  const headers = csv[0].split(',')
+  const datas = csv.slice(2)
   let year
 
   let events = []
 
-  let currentDate
-  let lastDate
+  let currentDate: Date
+  let lastDate: Date
 
   for (let i = 0; i < datas.length; i++) {
     let testForYear = datas[i].split(' ')
@@ -69,12 +65,12 @@ function createEvents(csv) {
     } else if (testForYear.length > 2) {
       let dataArray = datas[i].split(',')
 
-      let startEnd
-      let eventTitle
-      let eventLocation
-      let group
-      let lessonInfo
-      let lastUpdated
+      let startEnd: string[]
+      let eventTitle: string
+      let eventLocation: string
+      let group: string
+      let lessonInfo: string
+      let lastUpdated: string
 
       if (headers.length == dataArray.length) {
         for (let i = 0; i < headers.length; i++) {
@@ -93,14 +89,19 @@ function createEvents(csv) {
             }
           } else if (currentHeader == 'Start-Slut') {
             startEnd = dataArray[i].split('-')
-          } else if (currentHeader == 'Kurs.grp') {
+          } else if (
+            currentHeader === 'Kurs.grp' ||
+            currentHeader === 'Program'
+          ) {
             eventTitle = dataArray[i]
+            eventTitle = eventTitle.replace(/;| ;/g, ',')
           } else if (currentHeader == 'Grupp') {
             group = dataArray[i]
           } else if (currentHeader == 'Lokal') {
             eventLocation = dataArray[i]
           } else if (currentHeader == 'Moment') {
             lessonInfo = dataArray[i]
+            // lessonInfo = lessonInfo.replace(/<br>/g, ' | ')
           } else if (currentHeader == 'Uppdat.') {
             lastUpdated = dataArray[i]
           }
@@ -121,9 +122,11 @@ function createEvents(csv) {
       timeString += 'T'
 
       let startTimeS = timeString + startEnd[0]
+
       let endTimeArr = startEnd[1].split(':')
 
       let eventSTime = new Date(startTimeS.toString())
+
       let eventETime = new Date(
         currentDate.getFullYear(),
         currentDate.getMonth(),
@@ -132,10 +135,10 @@ function createEvents(csv) {
         parseInt(endTimeArr[1])
       )
 
-      let tmpDesc = 'Moment: ' + lessonInfo
-      tmpDesc += '\nGroup: ' + group
-      tmpDesc += '\nLast Updated: ' + lastUpdated
-      tmpDesc += '\nLast Cache: ' + getFormatedTime()
+      let description = 'Moment: ' + lessonInfo
+      if (group != ' ') description += '\nGroup: ' + group
+      description += '\nLast Updated: ' + lastUpdated
+      description += '\nLast Cache: ' + getFormatedTime()
 
       let event = {
         start: [
@@ -143,55 +146,27 @@ function createEvents(csv) {
           eventSTime.getMonth() + 1,
           eventSTime.getDate(),
           eventSTime.getHours(),
-          eventSTime.getMinutes()
+          eventSTime.getMinutes(),
         ],
         end: [
           eventETime.getFullYear(),
           eventETime.getMonth() + 1,
           eventETime.getDate(),
           eventETime.getHours(),
-          eventETime.getMinutes()
+          eventETime.getMinutes(),
         ],
         startOutputType: 'local',
         title: eventTitle,
-        description: tmpDesc,
+        description: description,
         location: eventLocation,
-        status: 'CONFIRMED'
+        status: 'CONFIRMED',
       }
 
       events.push(event)
     }
   }
+
   return events
 }
 
-function createICS(events) {
-  ics.createEvents(events, (error, value) => {
-    if (error) {
-      console.log(error)
-      return
-    }
-
-    fs.writeFileSync(rootPath + '/data/ics/latest.ics', value)
-  })
-}
-
-async function getCalendar(link) {
-  request(link, (err, resp, body) => {
-    console.log(new Date().toLocaleString())
-    console.log('error', err)
-    console.log('statusCode:', resp && resp.statusCode) // Print the response status code if a response was received
-
-    if (!err && resp.statusCode == 200) {
-      // fs.writeFileSync(rootPath + '/bruh.html', body)
-
-      let csv = convertCSV(body)
-
-      let events = createEvents(csv)
-
-      createICS(events)
-    }
-  })
-}
-
-module.exports = getCalendar
+export default { HTMLToCSV, createEvent, URL_SIG }
