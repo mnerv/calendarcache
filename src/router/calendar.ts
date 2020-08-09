@@ -1,7 +1,7 @@
 import express from 'express'
 import path from 'path'
 import consola from 'consola'
-import GetCalendar from '../functions/GetCalendar'
+import GetCalendar from 'functions/GetCalendar'
 
 const router = express.Router()
 
@@ -17,6 +17,11 @@ router.get('/test', (req, res, next) => {
       consola.warn({ message: `reject: ${error}` })
       res.sendStatus(500)
     })
+})
+
+router.get('/:id', (req, res, next) => {
+  console.log(req.params)
+  res.send('Test param, /key')
 })
 
 export default router
