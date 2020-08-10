@@ -1,9 +1,8 @@
 import fs from 'fs'
 import path from 'path'
-import consola from 'consola'
 import { createEvents } from 'ics'
 
-const ROOT_DIR = path.join(__dirname, '..', '..')
+const ROOT_DIR = path.resolve()
 
 function createICS(events: any[], filename: string) {
   createEvents(events, (error, value) => {

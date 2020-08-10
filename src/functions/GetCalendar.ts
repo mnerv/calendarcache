@@ -3,11 +3,11 @@ import request from 'request'
 import Kronox from './parser/KronoxMAU'
 import createICSFile from './CreateICSFile'
 
-const ROOT_DIR = path.join(__dirname, '..', '..')
+const ROOT_DIR = path.resolve()
 
-async function getCalendar(link: string, filename: string, testMode?: boolean) {
+async function getCalendar(link: string, filename: string) {
   return new Promise((resolve, reject) => {
-    if (link.includes(Kronox.URL_SIG) || testMode)
+    if (link.includes(Kronox.URL_SIG))
       request(link, (err, resp, body) => {
         const status = resp && resp.statusCode
 

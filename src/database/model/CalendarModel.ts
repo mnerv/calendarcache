@@ -1,42 +1,58 @@
-import { Sequelize, DataTypes, Model } from 'sequelize'
+import { Model, Optional, Sequelize, DataTypes } from 'sequelize'
+import { nanoid } from 'nanoid'
 
-class CalendarModel extends Model {
-  static define(db: Sequelize) {
+interface CalendarAttributes {
+  id: number
+  name: string
+  ics_filename: string
+  source_link: string
+  request_count: number
+}
+
+interface CalendarCreationAttributes
+  extends Optional<CalendarAttributes, 'id' | 'request_count'> {}
+
+class CalendarModel
+  extends Model<CalendarAttributes, CalendarCreationAttributes>
+  implements CalendarAttributes {
+  id!: number
+  name!: string
+  ics_filename!: string
+  source_link!: string
+  request_count: number
+
+  static define(sequelize: Sequelize) {
     CalendarModel.init(
       {
-        filename: {
-          type: DataTypes.STRING,
+        id: {
+          type: DataTypes.INTEGER,
+          autoIncrement: true,
+          primaryKey: true,
+        },
+        name: {
+          type: new DataTypes.STRING(128),
           allowNull: false,
           unique: true,
         },
-        path: {
-          type: DataTypes.STRING,
+        ics_filename: {
+          type: new DataTypes.STRING(128),
           allowNull: false,
+          unique: true,
         },
         source_link: {
-          type: DataTypes.STRING,
+          type: new DataTypes.STRING(128),
           allowNull: false,
-          unique: true,
         },
-        requestCount: {
+        request_count: {
           type: DataTypes.INTEGER,
-          allowNull: false,
+          defaultValue: 0,
         },
       },
       {
-        sequelize: db,
-        modelName: 'Calendar',
+        sequelize,
+        tableName: 'calendar',
       }
     )
-  }
-
-  static Create(filename: string, path: string, source_link: string) {
-    return CalendarModel.create({
-      filename,
-      path,
-      source_link,
-      requestCount: 0,
-    })
   }
 }
 
