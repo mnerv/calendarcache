@@ -18,10 +18,10 @@ Parse the raw `html` to `ics` file for calendars to use.
 
 ## How to run
 
-Start docker container
+Start redis docker container
 
 ```
-docker-compose up -d
+docker-compose -f docker-compose.dev.yml
 ```
 
 ### Development
@@ -38,14 +38,16 @@ docker exec -it calendar_redis redis-cli
 
 ### Production
 
-Clean the build folders
+The default port the service is running on is `3000`.
+
+Stop
 
 ```
-yarn clean
+docker-compose down
 ```
 
-Compile Typescript to Javascript
+Start
 
 ```
-yarn build
+docker-compose up -d
 ```
