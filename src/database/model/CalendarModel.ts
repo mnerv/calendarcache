@@ -6,11 +6,11 @@ interface CalendarAttributes {
   name: string
   ics_filename: string
   source_link: string
-  request_count: number
+  total_request: number
 }
 
 interface CalendarCreationAttributes
-  extends Optional<CalendarAttributes, 'id' | 'request_count'> {}
+  extends Optional<CalendarAttributes, 'id' | 'total_request'> {}
 
 class CalendarModel
   extends Model<CalendarAttributes, CalendarCreationAttributes>
@@ -19,7 +19,7 @@ class CalendarModel
   name!: string
   ics_filename!: string
   source_link!: string
-  request_count: number
+  total_request: number
 
   static define(sequelize: Sequelize) {
     CalendarModel.init(
@@ -43,7 +43,7 @@ class CalendarModel
           type: new DataTypes.STRING(128),
           allowNull: false,
         },
-        request_count: {
+        total_request: {
           type: DataTypes.INTEGER,
           defaultValue: 0,
         },
@@ -51,6 +51,8 @@ class CalendarModel
       {
         sequelize,
         tableName: 'calendar',
+        createdAt: 'created_at',
+        updatedAt: 'updated_at',
       }
     )
   }

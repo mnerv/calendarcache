@@ -81,7 +81,7 @@ router.get('/:name', (req, res, next) => {
           }
         )
 
-        data.increment('request_count')
+        data.increment('total_request')
         res
           .status(200)
           .sendFile(
