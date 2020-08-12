@@ -4,5 +4,7 @@ dist
 build
 lib
 data
+old
 
 *.log
+*.tsbuildinfo
