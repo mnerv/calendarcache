@@ -1,22 +1,21 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ES2017",
     "module": "CommonJS",
     "sourceMap": true,
     "outDir": "lib",
     "rootDir": "./src",
     "baseUrl": ".",
-    "paths": {
-      "functions/*": ["src/functions/*"],
-      "router/*": ["src/router/*"]
-    },
+    "lib": ["ESNext", "DOM"],
     "removeComments": false,
-    "strict": false,
+    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "incremental": true
+  }
 }

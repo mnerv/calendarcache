@@ -1,6 +1,6 @@
 import path from 'path'
 import request from 'request'
-import Kronox from './parser/KronoxMAU'
+import Kronox from './KronoxMAU'
 import createICSFile from './CreateICSFile'
 
 const ROOT_DIR = path.resolve()
