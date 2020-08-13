@@ -102,7 +102,9 @@ class KronoxMAU {
               eventLocation = dataArray[i]
             } else if (currentHeader == 'Moment') {
               lessonInfo = dataArray[i]
-              // lessonInfo = lessonInfo.replace(/<br>/g, ' | ')
+              lessonInfo = lessonInfo.replace(/<br>/g, ' | ')
+              lessonInfo = lessonInfo.replace(/\<.*?\>/g, '')
+              lessonInfo = lessonInfo.replace(/<|>/g, '')
             } else if (currentHeader == 'Uppdat.') {
               lastUpdated = dataArray[i]
             }
