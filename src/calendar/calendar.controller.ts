@@ -1,3 +1,6 @@
+import { RequestLogService } from './requestlog.service'
+import { CalendarDTO } from 'src/models/calendar.dto'
+import { ROOT_DIR } from 'src/config/config'
 import { CalendarService } from './calendar.service'
 import {
   Controller,
@@ -5,19 +8,19 @@ import {
   Param,
   Redirect,
   HttpStatus,
-  CacheTTL,
   Res,
+  Body,
+  Post,
 } from '@nestjs/common'
-import { isString } from 'util'
 import { Response } from 'express'
-
 import path from 'path'
-
-const ROOT_DIT = path.resolve()
 
 @Controller('calendar')
 export class CalendarController {
-  constructor(private readonly service: CalendarService) {}
+  constructor(
+    private readonly service: CalendarService,
+    private readonly logService: RequestLogService
+  ) {}
 
   @Redirect()
   @Get()
@@ -27,39 +30,26 @@ export class CalendarController {
 
   @Get('all')
   async getCalendars() {
-    return await this.service.getAll()
+    return await this.service.findAll()
   }
 
   @Get(':name')
-  @CacheTTL(10)
   async getCalendar(@Param('name') name: string, @Res() res: Response) {
     const result = await this.service.getCalendar(name.replace('.ics', ''))
-    if (isString(result))
-      return res.status(200).sendFile(path.join(ROOT_DIT, 'data/ics', result))
-    else return result
+    if (result)
+      res
+        .status(200)
+        .sendFile(path.join(ROOT_DIR, 'data/ics', result.ics_filename))
+    else res.sendStatus(404)
   }
 
-  // @Post('create')
-  // createCalendar(@Query('name') name: string, @Body('link') link: string) {
-  //   if (link)
-  //     return this.service.create({
-  //       name: name ? name : nanoid(),
-  //       source_link: link,
-  //     })
-  //   else return { message: 'no link given' }
-  // }
+  @Post('create')
+  async createCalendar(@Body() input: CalendarDTO) {
+    return await this.service.create(input)
+  }
 
-  // @Patch('edit/:id')
-  // editCalendar(
-  //   @Param('id') id: string,
-  //   @Body('name') name: string,
-  //   @Body('link') link: string
-  // ) {
-  //   return { message: `Edit calendar with id: ${id}` }
-  // }
-
-  // @Delete('delete/:id')
-  // deletCalendar(@Param('id') id: string) {
-  //   return { message: `Deleted ${id}` }
-  // }
+  @Get('api/requests/:id')
+  async getRequestLogs(@Param('id') id: string) {
+    return await this.logService.findAll(id)
+  }
 }

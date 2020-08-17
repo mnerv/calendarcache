@@ -1,10 +1,22 @@
+import { CalendarDTO } from 'src/models/calendar.dto'
 import { CalendarService } from './calendar.service'
-import { CalendarType, CalendarInput } from './../database/calendar.model'
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import { CalendarType } from 'src/models/calendar.model'
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql'
+import { RequestLogService } from './requestlog.service'
 
-@Resolver()
+@Resolver(CalendarType)
 export class CalendarResolver {
-  constructor(private readonly service: CalendarService) {}
+  constructor(
+    private readonly calendarService: CalendarService,
+    private readonly requestService: RequestLogService
+  ) {}
 
   @Query(() => String)
   async Hello() {
@@ -12,21 +24,24 @@ export class CalendarResolver {
   }
 
   @Query(() => [CalendarType])
-  calendars() {
-    return this.service.getAll()
+  async calendars() {
+    return await this.calendarService.findAll()
+  }
+
+  @ResolveField()
+  async requests(@Parent() calendar: CalendarType) {
+    const { id } = calendar
+    return this.requestService.findAll(id)
   }
 
   @Mutation(() => CalendarType)
-  async createCalendar(@Args('input') input: CalendarInput) {
-    if (input.name === '' || input.source_link === '')
-      throw new Error('name or source_link are emepty')
-    return this.service.create(input)
-  }
-
-  @Mutation(() => String)
-  async deleteCalendar(@Args('id') id: number) {
-    // const res = await this.service.deleteCalendar(id)
-    if (1 === 1) return `Deleted calendar with id: ${id}`
-    else throw new Error('Error invalid id or item not found')
+  async createCalendar(
+    @Args('name') name: string,
+    @Args('source_link') source_link: string
+  ) {
+    const c = new CalendarDTO()
+    c.name = name
+    c.source_link = source_link
+    return this.calendarService.create(c)
   }
 }

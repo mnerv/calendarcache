@@ -1,70 +1,98 @@
+import CalendarRequestLogsEntity from 'src/entity/calendar-activity.entity'
 import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  InternalServerErrorException,
+  ConflictException,
+  UsePipes,
+  ValidationPipe,
+  BadRequestException,
 } from '@nestjs/common'
-import { InjectModel } from '@nestjs/sequelize'
-import { CalendarModel, Calendar } from './../database/calendar.model'
-import GetCalendar from './parser/GetCalendar'
-import { nanoid } from 'nanoid'
-import { red, CACHE_TIME } from '../database/redis.cache'
+import CalendarEntity from 'src/entity/calendar.entity'
+import { Connection } from 'typeorm'
 import KronoxMAU from './parser/KronoxMAU'
+import { nanoid } from 'nanoid'
+import { CalendarDTO } from 'src/models/calendar.dto'
+import config from 'src/config/config'
+import GetCalendar from './parser/GetCalendar'
+import { redis, CACHE_TIME } from '../database/redis.cache'
+import consola from 'consola'
 
 @Injectable()
 export class CalendarService {
-  constructor(
-    @InjectModel(CalendarModel)
-    private model: typeof CalendarModel
-  ) {}
+  constructor(private db: Connection) {}
 
-  async create(input: Calendar) {
-    if (input.source_link.includes(KronoxMAU.URL_SIG)) {
-      input.ics_filename = input.name + nanoid() + '.ics'
-      return await this.model
-        .create(input)
-        .then((data) => {
-          GetCalendar(data.source_link, data.ics_filename)
-            .then((value) => {
-              red.setex(name, CACHE_TIME, data.ics_filename)
-              return data
-            })
-            .catch((err) => {
-              return err
-            })
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async create(input: CalendarDTO) {
+    if (!input.source_link.includes(KronoxMAU.URL_SIG) && !config.override_url)
+      throw new ForbiddenException('source_link does not matched url signature')
+
+    if (input.name.match(/[=&:/<>.*+\-?^${}()|[\]\\]/g))
+      throw new BadRequestException(
+        'Characters =&:/<>.*+-?^${}()|[]\\ are not allowed'
+      )
+
+    return this.db.transaction(async (m) => {
+      const ics = input.name + nanoid() + '.ics'
+      return m
+        .save(new CalendarEntity(input.name, ics, input.source_link))
+        .then(async (reply) => {
+          reply.cached_at = new Date()
+          reply.requests = []
+          if (config.create_calendar)
+            await GetCalendar(reply.source_link, reply.ics_filename).catch(
+              consola.error
+            )
+          await redis.setex(reply.name, CACHE_TIME, reply.ics_filename)
+          return reply
         })
         .catch((err) => {
-          return err
+          switch (err.errno) {
+            case 19:
+              if (err.message.includes('calendars.source_link'))
+                throw new ConflictException('Duplicate source_link')
+              if (err.message.includes('calendars.name'))
+                throw new ConflictException('Duplicate name')
+              break
+            default:
+              throw new InternalServerErrorException()
+          }
         })
-    } else
-      throw new ForbiddenException(
-        'source_link does not matched the url signature'
-      )
+    })
   }
 
-  async getAll() {
-    return await this.model.findAll()
+  async findAll() {
+    return CalendarEntity.find()
   }
 
   async getCalendar(name: string) {
-    return await this.model.findOne({ where: { name } }).then((data) => {
-      if (data) {
-        red.get(name, async (err, reply) => {
-          if (!reply) {
-            await GetCalendar(data.source_link, data.ics_filename)
-            red.setex(name, CACHE_TIME, data.ics_filename)
-          }
+    return CalendarEntity.findOne({ where: { name } }).then(async (reply) => {
+      if (reply) {
+        const log = new CalendarRequestLogsEntity()
+        await redis.get(reply.name).then(async (value) => {
+          if (!value) {
+            await GetCalendar(reply.source_link, reply.ics_filename)
+            redis.setex(reply.name, CACHE_TIME, reply.ics_filename)
+            log.cached_request = false
+            reply.cached_at = new Date()
+          } else log.cached_request = true
         })
-        data.increment('total_request')
-        return data.ics_filename
+
+        log.calendar = reply
+        reply.total_requests += 1
+        await log.save()
+        await reply.save()
+        return { ...reply }
       } else {
-        throw new NotFoundException('Calendar not found')
+        throw new NotFoundException(
+          `Can't find the calendar with the name ${name}`
+        )
       }
     })
   }
 
   async editCalendar(id: string, name: string, link: string) {}
 
-  async deleteCalendar(id: number) {
-    return await this.model.destroy({ where: { id: id } })
-  }
+  async deleteCalendar(id: number) {}
 }
