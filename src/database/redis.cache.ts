@@ -1,7 +1,13 @@
-import redis from 'redis'
+import Redis from 'ioredis'
+import config from 'src/config/config'
+import consola from 'consola'
 
-const REDIS_PORT = 6379
-const REDIS_HOST = false ? 'localhost' : 'redis'
+export const CACHE_TIME = config.redis_cache_time
 
-export const CACHE_TIME = 60 * 20
-export const red = redis.createClient(REDIS_PORT, REDIS_HOST)
+export const redis = new Redis(config.redis_port, config.redis_hostname)
+redis.addListener('ready', () => {
+  consola.ready({ message: 'Redis connected', badge: true })
+})
+redis.addListener('error', (err) => {
+  consola.error(err)
+})

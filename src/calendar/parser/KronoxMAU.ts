@@ -1,5 +1,7 @@
 import { JSDOM } from 'jsdom'
 import getFormatedTime from './GetFormatedTime'
+import CalendarEvent from './CalendarEvent'
+import config from 'src/config/config'
 
 class KronoxMAU {
   static readonly URL_SIG: string = 'https://schema.mau.se/setup/jsp/Schema.jsp'
@@ -53,7 +55,7 @@ class KronoxMAU {
     const datas = csv.slice(2)
     let year
 
-    let events = []
+    let events: CalendarEvent[] = []
 
     let currentDate!: Date
     let lastDate!: Date
@@ -73,41 +75,45 @@ class KronoxMAU {
         let lessonInfo!: string
         let lastUpdated!: string
 
-        if (headers.length == dataArray.length) {
-          for (let i = 0; i < headers.length; i++) {
-            let currentHeader = headers[i]
-            if (currentHeader == 'Datum') {
+        if (headers.length !== dataArray.length) break
+
+        for (let i = 0; i < headers.length; i++) {
+          const currentHeader = headers[i]
+          switch (currentHeader) {
+            case 'Datum':
               if (dataArray[i] != ' ') {
-                let dateString = (dataArray[i] + '-' + year)
+                const dateString = (dataArray[i] + '-' + year)
                   .replace(/ /g, '-')
                   .replace('Okt', 'Oct')
                   .replace('Maj', 'May')
-
                 currentDate = new Date(dateString)
                 lastDate = new Date(dateString)
-              } else {
-                currentDate = lastDate
-              }
-            } else if (currentHeader == 'Start-Slut') {
+              } else currentDate = lastDate
+              break
+            case 'Start-Slut':
               startEnd = dataArray[i].split('-')
-            } else if (
-              currentHeader === 'Kurs.grp' ||
-              currentHeader === 'Program'
-            ) {
+              break
+            case 'Kurs.grp':
+            case 'Program':
               eventTitle = dataArray[i]
               eventTitle = eventTitle.replace(/;| ;/g, ',')
-            } else if (currentHeader == 'Grupp') {
+              break
+            case 'Grupp':
               group = dataArray[i]
-            } else if (currentHeader == 'Lokal') {
+              break
+            case 'Lokal':
               eventLocation = dataArray[i]
-            } else if (currentHeader == 'Moment') {
+              break
+            case 'Moment':
               lessonInfo = dataArray[i]
               lessonInfo = lessonInfo.replace(/<br>/g, ' | ')
               lessonInfo = lessonInfo.replace(/\<.*?\>/g, '')
               lessonInfo = lessonInfo.replace(/<|>/g, '')
-            } else if (currentHeader == 'Uppdat.') {
+              break
+            case 'Uppdat.':
               lastUpdated = dataArray[i]
-            }
+            default:
+              break
           }
         }
 
@@ -124,11 +130,11 @@ class KronoxMAU {
             : '0' + currentDate.getDate().toString()
         timeString += 'T'
 
-        let startTimeS = timeString + startEnd[0]
+        const startTimeS = timeString + startEnd[0]
 
-        let endTimeArr = startEnd[1].split(':')
+        const endTimeArr = startEnd[1].split(':')
 
-        let eventSTime = new Date(startTimeS.toString())
+        const eventSTime = new Date(startTimeS.toString())
 
         let eventETime = new Date(
           currentDate.getFullYear(),
@@ -143,29 +149,28 @@ class KronoxMAU {
         description += '\nLast Updated: ' + lastUpdated
         description += '\nLast Cache: ' + getFormatedTime()
 
-        let event = {
-          start: [
-            eventSTime.getFullYear(),
-            eventSTime.getMonth() + 1,
-            eventSTime.getDate(),
-            eventSTime.getHours(),
-            eventSTime.getMinutes(),
-          ],
-          end: [
-            eventETime.getFullYear(),
-            eventETime.getMonth() + 1,
-            eventETime.getDate(),
-            eventETime.getHours(),
-            eventETime.getMinutes(),
-          ],
-          startOutputType: 'local',
-          title: eventTitle,
-          description: description,
-          location: eventLocation,
-          status: 'CONFIRMED',
-        }
+        const e = new CalendarEvent()
+        e.start = [
+          eventSTime.getFullYear(),
+          eventSTime.getMonth() + 1,
+          eventSTime.getDate(),
+          eventSTime.getHours() + config.timezone,
+          eventSTime.getMinutes(),
+        ]
+        e.end = [
+          eventETime.getFullYear(),
+          eventETime.getMonth() + 1,
+          eventETime.getDate(),
+          eventETime.getHours() + config.timezone,
+          eventETime.getMinutes(),
+        ]
+        e.startOutputType = 'utc'
+        e.title = eventTitle
+        e.description = description
+        e.location = eventLocation
+        e.status = 'CONFIRMED'
 
-        events.push(event)
+        events.push(e)
       }
     }
     return events
