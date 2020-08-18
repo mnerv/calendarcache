@@ -73,6 +73,13 @@ export class CalendarService {
         await redis.get(reply.name).then(async (value) => {
           if (!value) {
             await GetCalendar(reply.source_link, reply.ics_filename)
+              .then((value) => {
+                log.fetch_failed = false
+              })
+              .catch((err) => {
+                log.fetch_failed = true
+              })
+
             redis.setex(reply.name, CACHE_TIME, reply.ics_filename)
             log.cached_request = false
             reply.cached_at = new Date()

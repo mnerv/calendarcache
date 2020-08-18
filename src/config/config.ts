@@ -20,8 +20,6 @@ const CREATE_CALENDAR = process.env.CREATE_CALENDAR === 'true' || true
 const OVERRIDE_URL = process.env.OVERRIDE_URL === 'true' || false
 const TIMEZONE = process.env.TIMEZONE ? parseInt(process.env.TIMEZONE) : 0
 
-console.log(TIMEZONE)
-
 export default {
   hostname: HOSTNAME,
   port: PORT,
