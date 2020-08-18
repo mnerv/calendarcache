@@ -1,4 +1,4 @@
-import { CalendarRequeestLogsType } from 'src/models/calendar-requestlogs.model'
+import { CalendarRequestLogsType } from 'src/models/calendar-requestlogs.model'
 import { Field, ObjectType, ID, Int } from '@nestjs/graphql'
 
 @ObjectType()
@@ -27,6 +27,6 @@ export class CalendarType {
   @Field((type) => Date)
   readonly created!: number
 
-  @Field((type) => [CalendarRequeestLogsType])
-  requests!: CalendarRequeestLogsType[]
+  @Field((type) => [CalendarRequestLogsType])
+  requests!: CalendarRequestLogsType[]
 }
