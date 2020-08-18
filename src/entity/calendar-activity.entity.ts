@@ -7,6 +7,7 @@ import {
   Column,
   JoinColumn,
   BaseEntity,
+  JoinTable,
 } from 'typeorm'
 import CalendarEntity from './calendar.entity'
 
@@ -23,6 +24,7 @@ export default class CalendarRequestLogsEntity extends BaseEntity {
 
   @ManyToOne((type) => CalendarEntity, (calendar) => calendar.requests)
   @JoinColumn({ name: 'calendar_id' })
+  @JoinTable()
   calendar!: CalendarEntity
 
   @CreateDateColumn()

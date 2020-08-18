@@ -66,6 +66,16 @@ export class CalendarService {
     return CalendarEntity.find()
   }
 
+  async findOne(id: string) {
+    return await CalendarEntity.findOne({ where: { id } })
+      .then((reply) => {
+        return reply
+      })
+      .catch((err) => {
+        throw new NotFoundException('Calendar not found')
+      })
+  }
+
   async getCalendar(name: string) {
     return CalendarEntity.findOne({ where: { name } }).then(async (reply) => {
       if (reply) {

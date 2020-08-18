@@ -1,7 +1,8 @@
+import { CalendarType } from 'src/models/calendar.model'
 import { ObjectType, Field, ID } from '@nestjs/graphql'
 
 @ObjectType()
-export class CalendarRequeestLogsType {
+export class CalendarRequestLogsType {
   @Field((type) => ID)
   id!: number
 
@@ -9,8 +10,11 @@ export class CalendarRequeestLogsType {
   cached_request!: boolean
 
   @Field((type) => Boolean, { nullable: true })
-  fetch_failed!: boolean
+  fetch_failed?: boolean
 
   @Field((type) => Date)
   created!: Date
+
+  @Field((type) => CalendarType)
+  calendar!: CalendarType
 }
