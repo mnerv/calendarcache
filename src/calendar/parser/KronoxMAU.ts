@@ -60,6 +60,9 @@ class KronoxMAU {
     let currentDate!: Date
     let lastDate!: Date
 
+    const tmpTZ = process.env.TZ
+    process.env.TZ = 'Europe/Stockholm' // Set timezone the calendar is fetched from
+
     for (let i = 0; i < datas.length; i++) {
       let testForYear = datas[i].split(' ')
 
@@ -151,18 +154,18 @@ class KronoxMAU {
 
         const e = new CalendarEvent()
         e.start = [
-          eventSTime.getFullYear(),
-          eventSTime.getMonth() + 1,
-          eventSTime.getDate(),
-          eventSTime.getHours() + config.timezone,
-          eventSTime.getMinutes(),
+          eventSTime.getUTCFullYear(),
+          eventSTime.getUTCMonth() + 1,
+          eventSTime.getUTCDate(),
+          eventSTime.getUTCHours(),
+          eventSTime.getUTCMinutes(),
         ]
         e.end = [
-          eventETime.getFullYear(),
-          eventETime.getMonth() + 1,
-          eventETime.getDate(),
-          eventETime.getHours() + config.timezone,
-          eventETime.getMinutes(),
+          eventETime.getUTCFullYear(),
+          eventETime.getUTCMonth() + 1,
+          eventETime.getUTCDate(),
+          eventETime.getUTCHours(),
+          eventETime.getUTCMinutes(),
         ]
         e.startOutputType = 'utc'
         e.title = eventTitle
@@ -173,6 +176,9 @@ class KronoxMAU {
         events.push(e)
       }
     }
+
+    // Reset to system timezone if it exist
+    process.env.TZ = tmpTZ
     return events
   }
 }

@@ -1,3 +1,4 @@
+import { AuthModule } from './../auth/auth.module'
 import { RequestLogService } from './requestlog.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { CalendarResolver } from './calendar.resolver'
@@ -11,6 +12,7 @@ import { RequestLogsResolver } from './requestlogs.resolver'
 @Module({
   imports: [
     TypeOrmModule.forFeature([CalendarEntity, CalendarRequestLogsEntity]),
+    AuthModule,
   ],
   controllers: [CalendarController],
   providers: [

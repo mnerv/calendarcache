@@ -1,11 +1,10 @@
-import path from 'path'
 import request from 'request'
 import Kronox from './KronoxMAU'
 import createICSFile from './CreateICSFile'
-import config, { ROOT_DIR } from 'src/config/config'
+import config from 'src/config/config'
 
 async function getCalendar(link: string, filename: string) {
-  return new Promise<string | any>((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     if (link.includes(Kronox.URL_SIG) || config.override_url)
       request(link, (err, resp, body) => {
         const status = resp && resp.statusCode

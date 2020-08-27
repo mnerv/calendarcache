@@ -1,3 +1,4 @@
+import { AuthModule } from './auth/auth.module'
 import path from 'path'
 import { Module } from '@nestjs/common'
 import { CalendarModule } from './calendar/calendar.module'
@@ -9,6 +10,7 @@ import { ROOT_DIR } from 'src/config/config'
 
 @Module({
   imports: [
+    AuthModule,
     CalendarModule,
     TypeOrmModule.forRoot({
       type: 'sqlite',
@@ -18,6 +20,7 @@ import { ROOT_DIR } from 'src/config/config'
       dropSchema: false,
     }),
     GraphQLModule.forRoot({
+      context: ({ req }) => ({ req }),
       debug: false,
       autoSchemaFile: path.join(ROOT_DIR, 'data', 'schema.gql'),
     }),
