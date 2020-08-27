@@ -11,6 +11,7 @@ Parse the raw `html` to `ics` file for calendars to use.
     - [Environment variables](#environment-variables)
     - [Development](#development)
     - [Production](#production)
+  - [How to use](#how-to-use)
 
 ## Requirements
 
@@ -34,6 +35,8 @@ REDIS_CACHE_TIME=900
 TIMEZONE=0
 CREATE_CALENDAR=true
 OVERRIDE_URL=false
+JWT_EXPIRATION=1h
+SALT=10
 ```
 
 `PORT` | Server port
@@ -50,7 +53,13 @@ OVERRIDE_URL=false
 
 `OVERRIDE_URL` | Override URL signature checker
 
-`TIMEZONE` | Adjust the timezone if needs to
+`TZ` | Sets the timezone of the app.
+
+`JWT_SECRET` | Secret key to generate tokens, set before production
+
+`JWT_EXPIRATION` | Set the expiration for the tokens, format `60, "2 days", "10h", "7d"`. Read more [here](https://github.com/auth0/node-jsonwebtoken#jwtsignpayload-secretorprivatekey-options-callback).
+
+`SALT` | bcrypt salt round, `number`.
 
 ### Development
 
@@ -86,4 +95,29 @@ Start
 
 ```
 docker-compose up -d
+```
+
+## How to use
+
+The admin token is generate in data file under the name `admin_access.token`. This is generated the first time the app runs. The token is required to create users with admin privilege.
+
+The `POST` path to create user is
+
+```
+/auth/create?token=<token_here>
+```
+
+The body for `create` and `login` route needs contain `json` file with these value
+
+```
+{
+  "username": "username_here",
+  "password": "password_here"
+}
+```
+
+Login route is
+
+```
+/auth/login
 ```

@@ -1,3 +1,4 @@
+import { JwtAuthGuard } from './../auth/jwt-auth.guard'
 import { RequestLogService } from './requestlog.service'
 import { CalendarDTO } from 'src/models/calendar.dto'
 import { ROOT_DIR } from 'src/config/config'
@@ -11,6 +12,7 @@ import {
   Res,
   Body,
   Post,
+  UseGuards,
 } from '@nestjs/common'
 import { Response } from 'express'
 import path from 'path'
@@ -43,6 +45,7 @@ export class CalendarController {
     else res.sendStatus(404)
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('create')
   async createCalendar(@Body() input: CalendarDTO) {
     return await this.service.create(input)

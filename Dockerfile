@@ -1,4 +1,4 @@
-FROM node:14.7.0
+FROM node:14.8.0
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ COPY yarn.lock /app
 
 RUN yarn
 
-COPY . /app
+COPY . . 
 
 RUN yarn run build
 

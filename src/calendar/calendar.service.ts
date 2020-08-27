@@ -45,6 +45,7 @@ export class CalendarService {
               consola.error
             )
           await redis.setex(reply.name, CACHE_TIME, reply.ics_filename)
+          await reply.save()
           return reply
         })
         .catch((err) => {
@@ -85,13 +86,14 @@ export class CalendarService {
             await GetCalendar(reply.source_link, reply.ics_filename)
               .then((value) => {
                 log.fetch_failed = false
+                log.cached_request = false
               })
               .catch((err) => {
                 log.fetch_failed = true
+                log.cached_request = true
               })
 
             redis.setex(reply.name, CACHE_TIME, reply.ics_filename)
-            log.cached_request = false
             reply.cached_at = new Date()
           } else log.cached_request = true
         })
