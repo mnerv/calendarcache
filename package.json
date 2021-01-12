@@ -3,11 +3,11 @@
   "version": "2.0.0",
   "description": "calendar cache server.",
   "private": true,
-  "main": "lib/main.js",
+  "main": "build/main.js",
   "scripts": {
     "dev": "nest start --watch",
     "build": "nest build",
-    "start": "node lib/main",
+    "start": "node build/main",
     "clean": "rimraf build dist lib tsconfig.build.tsbuildinfo",
     "clean:db": "rimraf data/*.sqlite",
     "clean:secret": "rimraf data/*.token data/*.secret",

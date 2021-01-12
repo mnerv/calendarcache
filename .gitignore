@@ -2,8 +2,13 @@
 node_modules
 lib
 data
+build
 
 # Files
 *.log
 *.tsbuildinfo
 /.env
+
+# macOS
+.DS_Store
+*.icloud
