@@ -40,9 +40,9 @@ export class CalendarController {
     const result = await this.service.getCalendar(name.replace('.ics', ''))
     if (result)
       res
-        .status(200)
+        .status(200 as any) // Temporary fix
         .sendFile(path.join(ROOT_DIR, 'data/ics', result.ics_filename))
-    else res.sendStatus(404)
+    else res.sendStatus(404 as any)
   }
 
   @UseGuards(JwtAuthGuard)
