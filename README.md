@@ -32,7 +32,6 @@ HOSTNAME='localhost'
 REDIS_PORT=6379
 REDIS_HOSTNAME='redis'
 REDIS_CACHE_TIME=900
-TIMEZONE=0
 CREATE_CALENDAR=true
 OVERRIDE_URL=false
 JWT_EXPIRATION=1h
@@ -52,8 +51,6 @@ SALT=10
 `CREATE_CALENDAR` | Config if the `.ics` file should be create or not, use in development, creates the file in default.
 
 `OVERRIDE_URL` | Override URL signature checker
-
-`TZ` | Sets the timezone of the app.
 
 `JWT_SECRET` | Secret key to generate tokens, set before production
 

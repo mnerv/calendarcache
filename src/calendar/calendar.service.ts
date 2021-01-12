@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common'
 import CalendarEntity from 'src/entity/calendar.entity'
 import { Connection } from 'typeorm'
-import KronoxMAU from './parser/KronoxMAU'
+import { URL_SIG } from './parser/KronoxMAU'
 import { nanoid } from 'nanoid'
 import { CalendarDTO } from 'src/models/calendar.dto'
 import config from 'src/config/config'
@@ -25,7 +25,7 @@ export class CalendarService {
 
   @UsePipes(new ValidationPipe({ transform: true }))
   async create(input: CalendarDTO) {
-    if (!input.source_link.includes(KronoxMAU.URL_SIG) && !config.override_url)
+    if (!input.source_link.includes(URL_SIG) && !config.override_url)
       throw new ForbiddenException('source_link does not matched url signature')
 
     if (input.name.match(/[=&:/<>.*+\-?^${}()|[\]\\]/g))
