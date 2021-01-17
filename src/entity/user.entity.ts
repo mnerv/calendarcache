@@ -1,10 +1,4 @@
-import {
-  Entity,
-  BaseEntity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToMany,
-} from 'typeorm'
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column } from 'typeorm'
 
 @Entity({
   name: 'user',

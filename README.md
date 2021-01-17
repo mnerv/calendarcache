@@ -12,6 +12,7 @@ Parse the raw `html` to `ics` file for calendars to use.
     - [Development](#development)
     - [Production](#production)
   - [How to use](#how-to-use)
+    - [Calendar route](#calendar-route)
 
 ## Requirements
 
@@ -96,7 +97,7 @@ docker-compose up -d
 
 ## How to use
 
-The admin token is generate in data file under the name `admin_access.token`. This is generated the first time the app runs. The token is required to create users with admin privilege.
+The admin token is generate in data file under the name `admin_access.token`. This is generated the first time the app runs. The token is required to create users with admin privilege. You can remove both `admin.secret` and `admin_access.token` to regenerate them.
 
 The `POST` path to create user is
 
@@ -117,4 +118,12 @@ Login route is
 
 ```
 /auth/login
+```
+
+### Calendar route
+
+You can list the calendar like this
+
+```
+/calendar/all
 ```

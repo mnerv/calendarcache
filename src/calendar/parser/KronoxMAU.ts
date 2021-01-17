@@ -5,7 +5,9 @@ export const URL_SIG: string = 'https://schema.mau.se/setup/jsp/Schema.jsp'
 
 /**
  * Parse html body to csv (Comma-separated values)
+ *
  * @param html html body in string
+ * @return Array of string seperated with column separated by comma
  */
 export function HTMLToCSV(html: string) {
   const dom = new JSDOM(html)
@@ -51,6 +53,11 @@ export function HTMLToCSV(html: string) {
   return csv
 }
 
+/**
+ *
+ * @param csv Array of string with column separated by comma
+ * @param url The URL of site
+ */
 export function createEvent(csv: string[], url: string = '') {
   const headers = csv[0].split(',')
   const datas = csv.slice(2)
@@ -149,7 +156,7 @@ export function createEvent(csv: string[], url: string = '') {
       )
 
       let description = 'Moment: ' + lessonInfo.replace(';', ', ')
-      if (group != ' ') description += '\nGroup: ' + group
+      if (group && group != ' ') description += '\nGroup: ' + group
       description += '\n' + eventTitle
       description += '\n\nLast Updated: ' + lastUpdated
       description += '\nLast Cache: ' + new Date().toString()
