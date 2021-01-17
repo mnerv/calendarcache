@@ -29,7 +29,7 @@ const SALT = process.env.SALT ? parseInt(process.env.SALT) : 10
 async function randomAdminSecret() {
   return new Promise<string>((resolve, reject) => {
     if (!fs.existsSync(path.join(ROOT_DIR, 'data', 'admin.secret'))) {
-      const secret = nanoid()
+      const secret = nanoid(36)
       fs.writeFileSync(path.join(ROOT_DIR, 'data', 'admin.secret'), secret)
       resolve(secret)
     } else {

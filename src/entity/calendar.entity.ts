@@ -7,7 +7,6 @@ import {
   OneToMany,
   BaseEntity,
   JoinTable,
-  AfterLoad,
 } from 'typeorm'
 import CalendarRequestLogsEntity from './calendar-activity.entity'
 
