@@ -1,20 +1,18 @@
 version: '3.0'
 
 services:
-  calendar_cache:
+  api:
     build: .
-    image: calendar_cache
     ports:
       - '${PORT}:${PORT}'
     restart: always
     links:
-      - redis
+      - 'cache:${REDIS_HOST:-redis}'
     volumes:
       - ./data:/app/data
 
-  redis:
+  cache:
     image: redis
-    container_name: calendar_cache_redis
     restart: always
     volumes:
       - ./data/cache:/data

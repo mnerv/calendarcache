@@ -1,9 +1,8 @@
-version: '3.0'
+version: '3.9'
 
 services:
   redis:
     image: redis
-    container_name: calendar_cache_redis
     restart: always
     volumes:
       - ./data/cache:/data
