@@ -17,7 +17,7 @@ const ENV_CACHE_TIME       = env.CACHE_TIME              || '900' // s
 export const ENTITY_PATH   = IS_PRODUCTION ? 'build/entity/**/*.js' : 'src/entity/**/*.ts'
 export const ROOT_DIR      = path.resolve()
 export const SERVER_PORT   = parseInt(ENV_PORT)
-export const SERVER_HOST   = env.HOST                    || '127.0.0.1'
+export const SERVER_HOST   = env.HOST                    || '0.0.0.0'
 
 export const DATABASE_NAME = env.DATABASE_NAME           || 'database'
 
