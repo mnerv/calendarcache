@@ -7,7 +7,7 @@ services:
       - '${PORT}:${PORT}'
     restart: always
     links:
-      - 'cache:${REDIS_HOST:-redis}'
+      - 'cache'
     volumes:
       - ./data:/app/data
 
