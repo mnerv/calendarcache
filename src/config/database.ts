@@ -1,7 +1,9 @@
-import 'reflect-metadata'
-import { createConnection } from 'typeorm'
-import consola from 'consola'
 import path from 'path'
+
+import 'reflect-metadata'
+import consola from 'consola'
+import { createConnection } from 'typeorm'
+
 import {
   ROOT_DIR,
   ENTITY_PATH,
@@ -21,7 +23,7 @@ export async function connectToDatabase(): Promise<void> {
       database: path.join(ROOT_DIR, 'data', DATABASE_NAME + '.sqlite'),
       synchronize: true,
       logging: false,
-      dropSchema: true,
+      dropSchema: false,
       entities: [
         path.resolve(ROOT_DIR, ENTITY_PATH)
       ]

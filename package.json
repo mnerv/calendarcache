@@ -12,10 +12,12 @@
     "fix:eslint": "eslint --fix src/ --ext .ts --ext .js",
     "start": "NODE_ENV=production node .",
     "build": "tsc -p tsconfig.json",
-    "clean": "rimraf build dist lib *.tsbuildinfo",
+
+    "clean": "rimraf build  *.tsbuildinfo *.log",
+    "clean:data": "rimraf data",
     "clean:db": "rimraf data/*.sqlite",
     "clean:secret": "rimraf data/*.token data/*.secret",
-    "clean:ics": "rimraf data/ics/*"
+    "clean:calendar": "rimraf data/ics/* data/json/*"
   },
   "repository": {
     "type": "git",
@@ -24,12 +26,14 @@
   "devDependencies": {
     "@types/bcrypt": "^3.0.1",
     "@types/ioredis": "^4.22.3",
+    "@types/jsdom": "^16.2.11",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/node": "^14.14.41",
+    "@types/node-fetch": "^2.5.10",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
-    "eslint": "^7.24.0",
-    "eslint-plugin-json": "^2.1.2",
+    "eslint": "^7.29.0",
+    "eslint-plugin-json": "^3.0.0",
     "nodemon": "^2.0.7",
     "rimraf": "^3.0.2",
     "ts-node": "^9.1.1",
@@ -39,13 +43,16 @@
     "@sinclair/typebox": "^0.16.5",
     "bcrypt": "^5.0.1",
     "consola": "^2.15.3",
-    "dotenv": "^8.2.0",
-    "fastify": "^3.14.2",
-    "ioredis": "^4.26.0",
+    "dotenv": "^8.6.0",
+    "fastify": "^3.18.0",
+    "ics": "^2.29.0",
+    "ioredis": "^4.27.6",
+    "jsdom": "^16.6.0",
     "jsonwebtoken": "^8.5.1",
+    "node-fetch": "^2.6.1",
     "nodejs-snowflake": "^1.6.2",
     "reflect-metadata": "^0.1.13",
     "sqlite3": "^5.0.2",
-    "typeorm": "^0.2.32"
+    "typeorm": "^0.2.34"
   }
 }

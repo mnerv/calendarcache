@@ -1,4 +1,4 @@
-FROM node:15.14.0-slim
+FROM node:16-slim
 WORKDIR /app
 
 COPY package.json .
@@ -7,6 +7,7 @@ COPY pnpm-lock.yaml .
 RUN npm i -g pnpm
 RUN pnpm i --frozen-lockfile
 COPY . .
+RUN pnpm test:eslint
 RUN pnpm clean
 RUN pnpm build
 

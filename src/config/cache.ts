@@ -1,5 +1,6 @@
 import Redis from 'ioredis'
 import consola from 'consola'
+
 import { REDIS_PORT, REDIS_HOST } from './env'
 
 export const redis = new Redis(REDIS_PORT, REDIS_HOST)
