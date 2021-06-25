@@ -44,6 +44,7 @@
     "consola": "^2.15.3",
     "dotenv": "^8.6.0",
     "fastify": "^3.18.0",
+    "fastify-static": "^4.2.2",
     "ics": "^2.29.0",
     "ioredis": "^4.27.6",
     "jsdom": "^16.6.0",
