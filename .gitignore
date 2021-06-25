@@ -1,14 +1,26 @@
-# Directories
+# ┃ Outputs
+# ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ #
+
+## NodeJS
 node_modules
-lib
+
+## Builds
 data
 build
 
-# Files
+## Log files
 *.log
 *.tsbuildinfo
-/.env
+.env
 
-# macOS
+## Visual Studio Code
+.vscode
+
+# ┃ System Files
+# ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ #
+
+## macOS
 .DS_Store
+.AppleDouble
+.LSOverride
 *.icloud

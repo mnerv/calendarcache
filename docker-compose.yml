@@ -1,20 +1,18 @@
-version: '3.0'
+version: '3.9'
 
 services:
-  calendar_cache:
+  api:
     build: .
-    image: calendar_cache
     ports:
-      - '${PORT}:${PORT}'
+      - '${DOCKER_PORT:-8080}:${PORT:-8080}'
     restart: always
     links:
-      - redis
+      - 'cache'
     volumes:
       - ./data:/app/data
 
-  redis:
-    image: redis
-    container_name: calendar_cache_redis
+  cache:
+    image: redis:${REDIS_TAG:-latest}
     restart: always
     volumes:
       - ./data/cache:/data

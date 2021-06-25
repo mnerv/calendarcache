@@ -4,14 +4,12 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
-  BaseEntity,
-  JoinTable,
 } from 'typeorm'
-import CalendarRequestLogsEntity from './calendar-activity.entity'
+
+import { CalendarURLType } from '../model/calendar.model'
 
 @Entity({ name: 'calendars' })
-export default class CalendarEntity extends BaseEntity {
+export class CalendarEntity {
   @PrimaryGeneratedColumn()
   id!: number
 
@@ -19,31 +17,23 @@ export default class CalendarEntity extends BaseEntity {
   name!: string
 
   @Column({ unique: true, nullable: false })
-  ics_filename!: string
+  filename!: string
 
   @Column({ unique: true, nullable: false })
-  source_link!: string
+  source!: string
+
+  @Column({ nullable: false })
+  url_type!: CalendarURLType
 
   @Column({ default: 0 })
-  total_requests!: number
-
-  @OneToMany((type) => CalendarRequestLogsEntity, (log) => log.calendar)
-  @JoinTable()
-  requests!: CalendarRequestLogsEntity[]
+  requests!: number
 
   @Column({ nullable: true })
   cached_at!: Date
 
   @CreateDateColumn()
-  created!: Date
+  created_at!: Date
 
   @UpdateDateColumn()
-  updated!: Date
-
-  constructor(name: string, ics_filename: string, source_link: string) {
-    super()
-    this.name = name
-    this.ics_filename = ics_filename
-    this.source_link = source_link
-  }
+  updated_at!: Date
 }
