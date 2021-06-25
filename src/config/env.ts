@@ -22,7 +22,7 @@ export const SERVER_HOST   = env.HOST                    || '0.0.0.0'
 export const DATABASE_NAME = env.DATABASE_NAME           || 'database'
 
 export const REDIS_PORT    = parseInt(ENV_REDIS_PORT)
-export const REDIS_HOST    = env.REDIS_HOST              || 'localhost'
+export const REDIS_HOST    = env.REDIS_HOST              || 'cache'
 export const CACHE_TIME    = parseInt(ENV_CACHE_TIME)
 
 export const SALT_ROUNDS   = parseInt(ENV_SALT_ROUNDS)
