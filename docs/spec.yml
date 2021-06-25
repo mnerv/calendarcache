@@ -67,10 +67,13 @@ paths:
               properties:
                 name:
                   type: string
+                  description: Name of the calendar, this need to be unique.
                 url:
                   type: string
+                  description: The calendar location, this needs to be supported by the parser.
                 type:
                   type: integer
+                  description: The URL type, only available when in development mode.
       responses:
         '201':
           description: Successfully created calendar.
@@ -90,18 +93,14 @@ paths:
                 properties:
                   message:
                     type: string
-        '500':
-          description: Calendar does not satisfy the unique name.
+        '409':
+          description: Calendar with `name` already exists.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: integer
-                  error:
-                    type: string
-                  messsage:
+                  message:
                     type: string
 
   /calendar/{name}:

@@ -5,7 +5,12 @@ import fastifyStatic from 'fastify-static'
 import consola from 'consola'
 
 import { redis } from './config/cache'
-import { SERVER_PORT, SERVER_HOST, ROOT_DIR } from './config/env'
+import {
+  SERVER_PORT,
+  SERVER_HOST,
+  ROOT_DIR,
+  IS_PRODUCTION
+} from './config/env'
 import { connectToDatabase } from './config/database'
 import { generateAdminToken } from './config/token'
 
@@ -37,7 +42,8 @@ app.get('/spec.yml', async (req, rep) => {
 
 async function main() {
   try {
-    await generateAdminToken()
+    if (IS_PRODUCTION)
+      await generateAdminToken()
 
     redis.status  // Check redis connection status
                   // Triggers the connection event

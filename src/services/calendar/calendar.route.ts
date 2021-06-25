@@ -6,6 +6,7 @@ import { verifyJWTToken } from '../../config/token'
 import {
   createCalendar,
   findAllCalendars,
+  findCalendar,
   getCalendar
 } from './calendar.service'
 
@@ -33,7 +34,7 @@ const calendar: FPlugin = async (app, opts) => {
       else if (data.type == CalendarFileType.JSON)
         reply.send(JSON.parse(data.buffer.toString()))
     } catch (err) {
-      reply.status(404).send(err)
+      return err
     }
   })
 
@@ -46,7 +47,10 @@ const calendar: FPlugin = async (app, opts) => {
     try {
       const isAdmin = await verifyJWTToken(token)
         .catch(err => app.log.error(err))
-      if (isAdmin === ADMIN_ROLE) {
+
+      if (await findCalendar(name) !== undefined) {
+        reply.code(409).send({ message: `Calendar with name ${name} exists!` })
+      } else if (isAdmin === ADMIN_ROLE) {
         const calendar = await createCalendar({ name, url, type })
         reply.code(201).send({ message: `Calendar: ${calendar} created` })
       } else {

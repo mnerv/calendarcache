@@ -42,12 +42,8 @@ export async function createCalendar(
   newCalendar.name = name
 
   const manager = getManager()
-  const repo = getRepository(CalendarEntity)
 
   try {
-    if (await repo.findOne({ where: { name } }))
-      throw new Error(`CALENDAR {${name}} EXIST!`)
-
     const html = await fetchCalendar(url)
     const csv = await parseCalendar(html, urlType)
     const events = await createEvents({ name, url, csv }, urlType)
@@ -65,6 +61,17 @@ export async function createCalendar(
 
     redis.setex(newCalendar.name, CACHE_TIME, newCalendar.filename)
     return Promise.resolve(name)
+  } catch (err) {
+    return Promise.reject(err)
+  }
+}
+
+export async function findCalendar(name: string): Promise<CalendarEntity> {
+  try {
+    const calendar = await getRepository(CalendarEntity).findOne({ name })
+    if (calendar)
+      return Promise.resolve(calendar)
+    else return Promise.reject(`No calendar with name ${name} found`)
   } catch (err) {
     return Promise.reject(err)
   }
