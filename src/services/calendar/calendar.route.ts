@@ -1,5 +1,8 @@
 import { FastifyPluginAsync,  } from 'fastify'
 
+import { ADMIN_ROLE } from './../../config/env'
+import { verifyJWTToken } from '../../config/token'
+
 import {
   createCalendar,
   findAllCalendars,
@@ -34,12 +37,19 @@ const calendar: FastifyPluginAsync = async (app, opts) => {
     }
   })
 
-  app.post<{Body: ICalendarCreate}>('/calendar', async (request, reply) => {
+  app.post<{
+    Headers: {token: string},
+    Body: ICalendarCreate
+  }>('/calendar', async (request, reply) => {
+    const { token } = request.headers
     const { name, url, type } = request.body
     try {
-      const calendar = await createCalendar({ name, url, type })
-      return {
-        message: `Created calendar: ${calendar}`,
+      const isAdmin = await verifyJWTToken(token)
+      if (isAdmin === ADMIN_ROLE) {
+        const calendar = await createCalendar({ name, url, type })
+        reply.code(201).send({ message: `Calendar: ${calendar} created` })
+      } else {
+        reply.code(401).send({ message: 'invaid token' })
       }
     } catch (err) {
       return err

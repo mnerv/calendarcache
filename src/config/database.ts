@@ -12,7 +12,7 @@ import {
 
 /**
  * Connect to the database server with environment variables. Needs to be call
- * when application initialized.
+ * at the start of the application.
  *
  * @returns Connection promise
  */

@@ -4,6 +4,7 @@ import consola from 'consola'
 import { redis } from './config/cache'
 import { SERVER_PORT, SERVER_HOST } from './config/env'
 import { connectToDatabase } from './config/database'
+import { generateAdminToken } from './config/token'
 
 import calendar from './services/calendar/calendar.route'
 
@@ -27,6 +28,8 @@ app.get('/', async (request, reply) => {
 
 async function main() {
   try {
+    await generateAdminToken()
+
     redis.status  // Check redis connection status
                   // Triggers the connection event
 

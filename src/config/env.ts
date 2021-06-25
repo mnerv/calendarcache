@@ -35,6 +35,10 @@ export const JSON_PATH     = path.join(DATA_PATH, 'json')
 export const ICS_EXT       = /.ics/
 export const JSON_EXT      = /.json/
 
+export const ADMIN_ROLE    = env.ADMIN_ROLE              || 'admin'
+export const ADMIN_TOKEN   = 'access.token'
+export const ADMIN_SECRET  = 'admin.secret'
+
 if (!fs.existsSync(DATA_PATH))
   fs.mkdirSync(DATA_PATH)
 
@@ -43,14 +47,3 @@ if (!fs.existsSync(ICS_PATH))
 
 if (!fs.existsSync(JSON_PATH))
   fs.mkdirSync(JSON_PATH)
-
-export default {
-  ROOT_DIR,
-  ENTITY_PATH,
-  SERVER_PORT,
-  SERVER_HOST,
-  DATABASE_NAME,
-  REDIS_PORT,
-  REDIS_HOST,
-  SALT_ROUNDS
-}

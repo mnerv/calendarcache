@@ -12,7 +12,6 @@
     "fix:eslint": "eslint --fix src/ --ext .ts --ext .js",
     "start": "NODE_ENV=production node .",
     "build": "tsc -p tsconfig.json",
-
     "clean": "rimraf build  *.tsbuildinfo *.log",
     "clean:data": "rimraf data",
     "clean:db": "rimraf data/*.sqlite",
@@ -49,6 +48,7 @@
     "ioredis": "^4.27.6",
     "jsdom": "^16.6.0",
     "jsonwebtoken": "^8.5.1",
+    "nanoid": "^3.1.23",
     "node-fetch": "^2.6.1",
     "nodejs-snowflake": "^1.6.2",
     "reflect-metadata": "^0.1.13",

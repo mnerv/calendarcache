@@ -20,6 +20,7 @@ specifiers:
   ioredis: ^4.27.6
   jsdom: ^16.6.0
   jsonwebtoken: ^8.5.1
+  nanoid: ^3.1.23
   node-fetch: ^2.6.1
   nodejs-snowflake: ^1.6.2
   nodemon: ^2.0.7
@@ -40,6 +41,7 @@ dependencies:
   ioredis: 4.27.6
   jsdom: 16.6.0
   jsonwebtoken: 8.5.1
+  nanoid: 3.1.23
   node-fetch: 2.6.1
   nodejs-snowflake: 1.6.2
   reflect-metadata: 0.1.13
@@ -2165,6 +2167,12 @@ packages:
 
   /nanoclone/0.2.1:
     resolution: {integrity: sha512-wynEP02LmIbLpcYw8uBKpcfF6dmg2vcpKqxeH5UcoKEYdExslsdUA4ugFauuaeYdTB76ez6gJW8XAZ6CgkXYxA==}
+    dev: false
+
+  /nanoid/3.1.23:
+    resolution: {integrity: sha512-FiB0kzdP0FFVGDKlRLEQ1BgDzU87dy5NnzjeW9YZNt+/c3+q82EQDUwniSAUxp/F0gFNI1ZhKU1FqYsMuqZVnw==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
     dev: false
 
   /napi-build-utils/1.0.2:
