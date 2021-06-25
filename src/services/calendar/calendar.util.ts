@@ -66,15 +66,17 @@ export async function saveCalendar(
     return new Promise<string>((resolve, reject) => {
       ics.createEvents(events, (err, file) => {
         if (err) reject(err)
-        else fs.writeFile(path.join(ICS_PATH, filename + '.ics'), file, err => {
-          if (err) reject(err)
-          else resolve(filename)
-        })
+        else fs.writeFile(path.join(ICS_PATH, filename + ICS_EXT.source),
+          file,
+          err => {
+            if (err) reject(err)
+            else resolve(filename)
+          })
       })
     })
   case CalendarFileType.JSON:
     return new Promise<string>((resolve, reject) => {
-      fs.writeFile(path.join(JSON_PATH, filename + '.json'),
+      fs.writeFile(path.join(JSON_PATH, filename + JSON_EXT.source),
         JSON.stringify(events),
         (err) => {
           if (err) reject(err)

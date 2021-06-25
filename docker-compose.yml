@@ -10,6 +10,7 @@ services:
       - 'cache'
     volumes:
       - ./data:/app/data
+      - ./.env:/app/.env
 
   cache:
     image: redis:${REDIS_TAG:-latest}
