@@ -1,0 +1,121 @@
+openapi: 3.0.0
+
+info:
+  version: 0.1.1
+  title: Calendar cache service API
+  description: >-
+    Simple caching server for calendars. Generate ICS and JSON file for later
+    use.
+
+paths:
+  /calendar:
+    get:
+      summary: List all calendars.
+      description: Return list of all available calendars.
+      responses:
+        '200':
+          description: Successfully returned a list of calendars.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    filename:
+                      type: string
+                    source:
+                      type: string
+                    url_type:
+                      type: integer
+                    requests:
+                      type: integer
+                    cached_at:
+                      type: string
+                    created_at:
+                      type: string
+                    updated_at:
+                      type: string
+
+    post:
+      summary: Calendar creation.
+      description: >-
+        Create a calendar with a given link and name.
+        The name must be unique and the url link needs to be supported.
+      parameters:
+        - in: header
+          required: true
+          name: token
+          schema:
+            type: string
+          description: >-
+            Generated access token. Only available if you have direct access to
+            the server.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - url
+              properties:
+                name:
+                  type: string
+                url:
+                  type: string
+                type:
+                  type: integer
+      responses:
+        '201':
+          description: Successfully created calendar.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          description: Invalid token and calendar creation failed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Calendar does not satisfy the unique name.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                  error:
+                    type: string
+                  messsage:
+                    type: string
+
+  /calendar/{name}:
+    get:
+      summary: Get a calendar by name.
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+            description: >-
+              Calendar name. And extension might be used to specify the file
+              type, example: `.json` or `.ics`
+      responses:
+        '200':
+          description: Successfully retrieve a calendar with given name.

@@ -1,4 +1,4 @@
-import { FastifyPluginAsync,  } from 'fastify'
+import { FastifyPluginAsync as FPlugin } from 'fastify'
 
 import { ADMIN_ROLE } from '../../config/env'
 import { verifyJWTToken } from '../../config/token'
@@ -15,7 +15,7 @@ import {
   ICalendarCreate
 } from '../../model/calendar.model'
 
-const calendar: FastifyPluginAsync = async (app, opts) => {
+const calendar: FPlugin = async (app, opts) => {
 
   app.get('/calendar', async (request, reply) => {
     return findAllCalendars()
