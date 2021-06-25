@@ -2,7 +2,7 @@ import {
   ICS_EXT,
   JSON_EXT,
   CACHE_TIME
-} from './../../config/env'
+} from '../../config/env'
 
 import { getManager, getRepository } from 'typeorm'
 import { snow } from '../../config/token'
@@ -104,15 +104,9 @@ export async function getCalendar(rawName: string): Promise<{
         calendar.cached_at = new Date()
       }
 
-      let buffer: Buffer
-      let type: CalendarFileType
-      if (rawName.match(JSON_EXT)) {
-        type = CalendarFileType.JSON
-        buffer = await readCalendarFile(calendar.filename, type)
-      } else {
-        type = CalendarFileType.ICS
-        buffer = await readCalendarFile(calendar.filename, type)
-      }
+      const type = rawName.match(JSON_EXT) ?
+        CalendarFileType.JSON : CalendarFileType.ICS
+      const buffer = await readCalendarFile(calendar.filename, type)
 
       calendar.requests++
       await getManager().save(calendar)

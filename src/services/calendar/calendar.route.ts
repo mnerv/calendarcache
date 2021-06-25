@@ -1,6 +1,6 @@
 import { FastifyPluginAsync,  } from 'fastify'
 
-import { ADMIN_ROLE } from './../../config/env'
+import { ADMIN_ROLE } from '../../config/env'
 import { verifyJWTToken } from '../../config/token'
 
 import {
