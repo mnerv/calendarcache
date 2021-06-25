@@ -53,8 +53,9 @@ export async function createCalendar(
     const events = await createEvents({ name, url, csv }, urlType)
 
     const filename = (await snow.asyncGetUniqueID()).toString()
-    await saveCalendar(filename, events, CalendarFileType.ICS)
-    await saveCalendar(filename, events, CalendarFileType.JSON)
+    saveCalendar(filename, events, CalendarFileType.ICS)
+    saveCalendar(filename, events, CalendarFileType.JSON)
+
     newCalendar.filename = filename
     newCalendar.cached_at = new Date()
     newCalendar.source = url
@@ -62,6 +63,7 @@ export async function createCalendar(
 
     await manager.save(newCalendar)
 
+    redis.setex(newCalendar.name, CACHE_TIME, newCalendar.filename)
     return Promise.resolve(name)
   } catch (err) {
     return Promise.reject(err)
@@ -116,8 +118,7 @@ export async function getCalendar(rawName: string): Promise<{
       await getManager().save(calendar)
 
       return Promise.resolve({ type, buffer })
-    }
-    else {
+    } else {
       return Promise.reject(`CALENDAR ${name} DOES NOT EXIST`)
     }
   } catch (err) {

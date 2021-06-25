@@ -9,7 +9,6 @@ import { generateAdminToken } from './config/token'
 import calendar from './services/calendar/calendar.route'
 
 const app = fastify({
-  logger: false,
   ignoreTrailingSlash: true
 })
 
@@ -47,6 +46,10 @@ async function main() {
       badge: true
     })
   } catch (err) {
+    consola.error({
+      message: err,
+      badge: true
+    })
     app.log.error(err)
     process.exit(1)
   }

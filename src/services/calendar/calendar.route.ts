@@ -45,6 +45,7 @@ const calendar: FastifyPluginAsync = async (app, opts) => {
     const { name, url, type } = request.body
     try {
       const isAdmin = await verifyJWTToken(token)
+        .catch(err => app.log.error(err))
       if (isAdmin === ADMIN_ROLE) {
         const calendar = await createCalendar({ name, url, type })
         reply.code(201).send({ message: `Calendar: ${calendar} created` })
