@@ -1,2 +1,7 @@
 node_modules
 README.md
+data
+build
+*.tsbuildinfo
+.DS_Store
+.vscode

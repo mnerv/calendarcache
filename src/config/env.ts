@@ -14,7 +14,8 @@ const ENV_SALT_ROUNDS      = env.SALT_ROUNDS             || '10'
 const ENV_MACHINE_ID       = env.MACHINE_ID              || '0'   // 12-bit
 const ENV_CACHE_TIME       = env.CACHE_TIME              || '900' // s
 
-export const ENTITY_PATH   = IS_PRODUCTION ? 'build/entity/**/*.js' : 'src/entity/**/*.ts'
+// export const ENTITY_PATH   = IS_PRODUCTION ? 'build/entity/**/*.js' : 'src/entity/**/*.ts'
+export const ENTITY_PATH   = 'build/entity/**/*.js'
 export const ROOT_DIR      = path.resolve()
 export const SERVER_PORT   = parseInt(ENV_PORT)
 export const SERVER_HOST   = env.HOST                    || '0.0.0.0'
