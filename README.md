@@ -23,6 +23,12 @@ Run the `redis` service with docker
 docker-compose -f docker-compose.dev.yml up -d
 ```
 
+Run typescript in watch mode
+
+```
+pnpm watch
+```
+
 Run the development server
 
 ```
