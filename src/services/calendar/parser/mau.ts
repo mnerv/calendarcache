@@ -38,6 +38,7 @@ export function mauParser(html: string): string[] {
       }
 
       currentValue = currentValue.replace(/&nbsp;/g, ' ')
+      currentValue = currentValue.replace(/&amp;/g, '&')
       currentValue = currentValue.replace(/,/g, ';')
       row.push(currentValue)
     }
