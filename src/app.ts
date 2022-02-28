@@ -1,62 +1,28 @@
-import path from 'path'
-
 import { fastify } from 'fastify'
-import fastifyStatic from 'fastify-static'
+import fastifyCors from 'fastify-cors'
 import consola from 'consola'
 
-import { redis } from './config/cache'
+import { redis } from './config/redis'
 import {
   SERVER_PORT,
   SERVER_HOST,
-  ROOT_DIR,
-  IS_PRODUCTION
 } from './config/env'
-import { connectToDatabase } from './config/database'
-import { generateAdminToken } from './config/token'
-
-import calendar from './services/calendar/calendar.route'
 
 const app = fastify({
   ignoreTrailingSlash: true
 })
 
-// Static files
-app.register(fastifyStatic, {
-  root: path.join(ROOT_DIR, 'public')
+app.register(fastifyCors, {
+  origin: '*'
 })
 
-// Route registration
-app.register(calendar)
-
-app.get('/ping', async (request, reply) => {
+app.get('/ping', async (req, rep) => {
   return 'pong!'
-})
-
-app.get('/', async (request, reply) => {
-  return reply.sendFile('docs.html')
-})
-
-app.get('/spec.yml', async (req, rep) => {
-  return rep.sendFile('spec.yml', path.join(ROOT_DIR, 'docs'))
 })
 
 async function main() {
   try {
-    if (IS_PRODUCTION)
-      await generateAdminToken()
-
-    redis.status  // Check redis connection status
-                  // Triggers the connection event
-
-    await connectToDatabase().catch(err => {
-      consola.error({
-        message: err,
-        badge: true
-      })
-    })
-
     const address = await app.listen(SERVER_PORT, SERVER_HOST)
-
     consola.ready({
       message: `Listening: ${address}`,
       badge: true
