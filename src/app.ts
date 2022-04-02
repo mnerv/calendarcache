@@ -1,20 +1,16 @@
 import { fastify } from 'fastify'
 import fastifyCors from 'fastify-cors'
 import consola from 'consola'
+import { APP_HOST, APP_PORT } from './config/env'
 
-import { redis } from './config/redis'
-import {
-  SERVER_PORT,
-  SERVER_HOST,
-} from './config/env'
+import CalendarRoute from './calendar.route'
 
 const app = fastify({
   ignoreTrailingSlash: true
 })
 
-app.register(fastifyCors, {
-  origin: '*'
-})
+app.register(fastifyCors, { origin: '*' })
+app.register(CalendarRoute, { prefix: '/beta/calendar' })
 
 app.get('/ping', async (req, rep) => {
   return 'pong!'
@@ -22,7 +18,7 @@ app.get('/ping', async (req, rep) => {
 
 async function main() {
   try {
-    const address = await app.listen(SERVER_PORT, SERVER_HOST)
+    const address = await app.listen(APP_PORT, APP_HOST)
     consola.ready({
       message: `Listening: ${address}`,
       badge: true

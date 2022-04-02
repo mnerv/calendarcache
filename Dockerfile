@@ -2,14 +2,13 @@ FROM node:16.3.0
 WORKDIR /app
 
 COPY package.json .
-COPY pnpm-lock.yaml .
+COPY yarn.lock .
 
-RUN npm i -g pnpm
-RUN pnpm i --frozen-lockfile
+RUN yarn --frozen-lockfile
 COPY . .
-RUN pnpm test:eslint
-RUN pnpm clean
-RUN pnpm build
+RUN yarn test:eslint
+RUN yarn clean
+RUN yarn build
 
 EXPOSE 8080
-CMD ["pnpm", "start"]
+CMD ["yarn", "start"]

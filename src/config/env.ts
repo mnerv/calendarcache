@@ -7,8 +7,8 @@ import fs from 'fs'
 dotenv.config()
 const env = process.env
 
-export const APP_PORT = parseInt(env.APP_PORT ?? '3000')
-export const APP_HOST = env.APP_HOST          ?? 'localhost'
+export const APP_PORT = parseInt(env.APP_PORT ?? '8080')
+export const APP_HOST = env.APP_HOST          ?? '0.0.0.0'
 
 export const REDIS_PORT = parseInt(env.REDIS_PORT ?? '6379')
 export const REDIS_HOST = env.REDIS_HOST          ?? 'localhost'

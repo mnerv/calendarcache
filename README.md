@@ -5,7 +5,6 @@ Calendar cache service parse `html` and convert it to an `ics` file.
 ## Requirements
 
  - [nodejs](https://nodejs.dev)
- - [pnpm](https://pnpm.io)
  - [docker](https://www.docker.com)
  - [docker-compose](https://docs.docker.com/compose/)
 
@@ -14,7 +13,7 @@ Calendar cache service parse `html` and convert it to an `ics` file.
 Install the required packages
 
 ```
-pnpm i
+yarn
 ```
 
 Run the `redis` service with docker
@@ -26,13 +25,13 @@ docker-compose -f docker-compose.dev.yml up -d
 Run typescript in watch mode
 
 ```
-pnpm watch
+yarn watch
 ```
 
 Run the development server
 
 ```
-pnpm dev
+yarn dev
 ```
 
 ## Production

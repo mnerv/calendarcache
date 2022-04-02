@@ -23,3 +23,5 @@ redis.addListener('close', () => {
     message: 'Disconnected from Redis cache!'
   })
 })
+
+export default redis
