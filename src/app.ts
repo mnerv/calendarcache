@@ -5,21 +5,28 @@ import { APP_HOST, APP_PORT } from './config/env'
 
 import CalendarRoute from './calendar.route'
 
-const app = fastify({
-  ignoreTrailingSlash: true
-})
-
-app.register(fastifyCors, { origin: '*' })
-app.register(CalendarRoute, { prefix: '/beta/calendar' })
-
-app.get('/', (req, res) => {
-  res.send({
-    random: Math.random(),
-    message: 'Hello, World!'
-  })
-})
-
 async function main() {
+  const app = fastify({
+    ignoreTrailingSlash: true
+  })
+
+  app.decorate('asyncVerifyAdmin', async (request: any, reply: any, done: any) => {
+    reply.status(401).send({
+      error: 'Unauthorized',
+    })
+    done() // pass an error if the authentication fails
+  })
+
+  await app.register(fastifyCors, { origin: '*' })
+  await app.register(CalendarRoute, { prefix: '/beta/calendar' })
+
+  app.get('/', (req, res) => {
+    res.send({
+      random: Math.random(),
+      message: 'Hello, World!'
+    })
+  })
+
   try {
     const address = await app.listen(APP_PORT, APP_HOST)
     consola.ready({

@@ -226,7 +226,6 @@ function createEvents(mainCSV: string[][], signCSV: string[][],
       location,
       url: source,
     }
-
     events.push(event)
   }
   return events

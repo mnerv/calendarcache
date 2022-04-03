@@ -16,7 +16,7 @@ interface ICalendar {
 
 where `id` is the hash of the `name`.
 
-`souce: string[]` as array of strings add feature for merging multiple calendar sources.
+`source: string[]` as array of strings add feature for merging multiple calendar sources.
 
 #### `events:{id}`
 
@@ -36,7 +36,3 @@ interface IEvent {
 ```
 
 #### `cache:events:{id}`
-
-#### `archive:{id}`
-
-#### `archive:events:{id}`

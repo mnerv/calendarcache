@@ -48,7 +48,6 @@ const plugin: FastifyPluginAsync = async (app, _) => {
     res.send(text)
   })
 
-  // TODO: Routes below needs to validate if the user has access rights to the calendar creation
   app.post<{Body: TCalendarCreate}>('/', async (req, res) => {
     const dec = CalendarCreate.decode(req.body)
     if (isLeft(dec)) {
@@ -75,17 +74,18 @@ const plugin: FastifyPluginAsync = async (app, _) => {
     }
   })
 
+  // TODO: Routes below needs to validate if the user has access rights to the calendar creation
   app.patch<{Params: TCalendarID}>('/:id', async (req, res) => {
     throw new Error('[PATCH] Not implemented')
   })
 
-  app.delete<{Params: TCalendarID}>('/:id', async (req, res) => {
-    const { id } = req.params
-    await CalService.delete(id)
-    res.status(200).send({
-      message: `Calendar ${id} deleted successfully`
-    })
-  })
+  // app.delete<{Params: TCalendarID}>('/:id', async (req, res) => {
+  //   const { id } = req.params
+  //   await CalService.delete(id)
+  //   res.status(200).send({
+  //     message: `Calendar ${id} deleted successfully`
+  //   })
+  // })
 }
 
 export default plugin
