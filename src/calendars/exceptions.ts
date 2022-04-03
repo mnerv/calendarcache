@@ -11,4 +11,3 @@ export class CalendarSupportException extends CalendarException {
     this.name = 'CalendarSupportException'
   }
 }
-

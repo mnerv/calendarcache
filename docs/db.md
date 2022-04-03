@@ -1,15 +1,40 @@
 # redis database storage
 
-`calendar:{id}` where `{id}` is the hash of the `name`.
+#### `calendar:{id}`
 
-```
-name:    string
-source:  string
-id:      string
-created: date
-updated: date
+where `{id}` is the hash of the `name`.
+
+```ts
+interface ICalendar {
+  name:    string
+  source:  string[]
+  id:      string
+  created: Date
+  updated: Date
+}
 ```
 
 where `id` is the hash of the `name`.
 
-`source:{id}` where `{id}` is the has of the `source`.
+`souce: string[]` as array of strings add feature for merging multiple calendar sources.
+
+#### `source:{id}`
+
+where `{id}` is the hash of the `source`. This key stores array of `IEvent` as `JSON`.
+
+```ts
+interface IEvent {
+  start: Date
+  end:   Date
+
+  title:       string
+  description: string
+  location:    string
+
+  url: string
+}
+```
+
+#### `cache:{id}`
+
+where `{id}` is the hash of original data.

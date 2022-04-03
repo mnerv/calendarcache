@@ -12,8 +12,11 @@ const app = fastify({
 app.register(fastifyCors, { origin: '*' })
 app.register(CalendarRoute, { prefix: '/beta/calendar' })
 
-app.get('/ping', async (req, rep) => {
-  return 'pong!'
+app.get('/', (req, res) => {
+  res.send({
+    random: Math.random(),
+    message: 'Hello, World!'
+  })
 })
 
 async function main() {

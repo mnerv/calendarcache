@@ -4,10 +4,8 @@ import * as io from 'io-ts'
 import { CalendarCreate, TCalendarCreate } from './calendar.model'
 
 import CalService from './calendar.service'
-import {
-  CalendarException,
-  CalendarSupportException
-} from './calendars/exceptions'
+import { CalendarException } from './calendars/exceptions'
+import { CalendarFile, getType, removeExtension } from './calendars/supported'
 
 const CalendarName = io.type({
   name: io.string,
@@ -20,25 +18,34 @@ const CalendarID = io.type({
 type TCalendarID = io.TypeOf<typeof CalendarID>
 
 const CalendarListQuery = io.type({
+  limit: io.union([io.string, io.undefined]),
   id: io.union([io.string, io.undefined]),
 })
 type TCalendarListQuery = io.TypeOf<typeof CalendarListQuery>
 
-const plugin: FastifyPluginAsync = async (app, opts) => {
+const plugin: FastifyPluginAsync = async (app, _) => {
   app.get<{Querystring: TCalendarListQuery}>('/', async (req, res) => {
     const decode = CalendarListQuery.decode(req.query)
     if (isLeft(decode))
       return res.send(await CalService.listInfo())
-
-    console.log(decode)
     res.send(await CalService.listInfo())
   })
 
   app.get<{Params: TCalendarName}>('/:name', async (req, res) => {
-    const { name } = req.params
-    res.send({
-      message: `Hello from calendar ${name}!`
-    })
+    const { name: nameExt } = req.params
+    const name = removeExtension(nameExt)
+    const filetype = getType(nameExt)
+    const text = await CalService.load(filetype, name)
+    switch (filetype) {
+    case CalendarFile.ICS:
+      res.header('content-type', 'text/calendar; charset=utf-8')
+      break
+    case CalendarFile.JSON:
+    default:
+      res.header('content-type', 'application/json')
+      break
+    }
+    res.send(text)
   })
 
   // TODO: Routes below needs to validate if the user has access rights to the calendar creation
