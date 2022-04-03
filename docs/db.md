@@ -18,7 +18,7 @@ where `id` is the hash of the `name`.
 
 `souce: string[]` as array of strings add feature for merging multiple calendar sources.
 
-#### `source:{id}`
+#### `events:{id}`
 
 where `{id}` is the hash of the `source`. This key stores array of `IEvent` as `JSON`.
 
@@ -35,6 +35,8 @@ interface IEvent {
 }
 ```
 
-#### `cache:{id}`
+#### `cache:events:{id}`
 
-where `{id}` is the hash of original data.
+#### `archive:{id}`
+
+#### `archive:events:{id}`

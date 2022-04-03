@@ -1,8 +1,6 @@
 import { JSDOM } from 'jsdom'
 import { TEventModel } from '../calendar.model'
-import { CalendarException } from './exceptions'
-
-const delimiter = '\t'
+import { CalendarException, CalendarParseException } from './exceptions'
 
 function dateToStr(date: Date): string {
   const year = date.getFullYear()
@@ -11,8 +9,7 @@ function dateToStr(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
-function parseMainTableToCSV(str: string): string {
-  const dom = new JSDOM(str)
+function parseMainTableToCSV(dom: JSDOM): string[][] {
   const mainTable = dom.window.document.querySelector('.schemaTabell') as Element
   const mainRows = mainTable.querySelectorAll('tr')
   const csv: string[][] = []
@@ -48,14 +45,14 @@ function parseMainTableToCSV(str: string): string {
   return cleanMainTable(csv)
 }
 
-function cleanMainTable(csv: string[][]): string {
+function cleanMainTable(csv: string[][]): string[][] {
   const requiredHeaders = ['start', 'slut', 'kurs', 'grupp', 'sign', 'lokal', 'hjälp', 'moment', 'uppdat']
   const header = csv.shift()
   if (!header)
     throw new CalendarException('CSV Table missing header!')
 
-  const outCSV: string[] = []
-  outCSV.push(requiredHeaders.join(delimiter))
+  const outCSV: string[][] = []
+  outCSV.push(requiredHeaders)
   let currentDate!: Date
   let lastDate!: Date
   let year: string | null = null
@@ -80,16 +77,17 @@ function cleanMainTable(csv: string[][]): string {
     for (let j = 0; j < row.length; j++) {
       const col = row[j]
       switch (header[j]) {
-      case 'Datum':
-        if (col !== ' ') {
+      case 'Datum': {
+        if (col !== '' && col !== ' ') {
           const dateStr = (col.trim() + '-' + year)
             .replace(/ /g, '-')
             .replace('Okt', 'Oct')
             .replace('Maj', 'May')
           currentDate = new Date(dateStr)
-          lastDate = new Date(dateStr)
+          lastDate = currentDate
         } else currentDate = lastDate
         break
+      }
       case 'Start-Slut':{
         [startTime, endTime] = col.split('-')
         break
@@ -118,24 +116,128 @@ function cleanMainTable(csv: string[][]): string {
         break
       }
     }
-    if (!startTime && !endTime && (!title || title === '')) continue
+    if (!startTime && !endTime && !title) continue
     const dateStr = dateToStr(currentDate)
     startTime = `${dateStr}T${startTime}`
     endTime   = `${dateStr}T${endTime}`
 
-    const add = [startTime, endTime, title, group, signature, location, help, moment, updated]
-    outCSV.push(add.join(delimiter))
+    const add = [
+      startTime, endTime,
+      title     ?? '', group    ?? '',
+      signature ?? '', location ?? '',
+      help      ?? '', moment   ?? '',
+      updated   ?? ''
+    ]
+    outCSV.push(add)
   }
-  return outCSV.join('\n')
+  return outCSV
 }
 
-function createEvents(csv: string): TEventModel[] {
-  throw new Error('Not implemented')
+function parseSignTableToCSV(dom: JSDOM): string[][] {
+  const candidate = dom.window.document.querySelectorAll('tbody')
+  const tableName = Array.from(candidate).find(el => el.innerHTML.includes('Signaturer'))
+  if (!tableName) throw new CalendarParseException('Signature table not found!')
+  const rows = Array.from(tableName.querySelectorAll('tr'))
+  const header = Array.from(rows[1].querySelectorAll('th')).map(el => el.innerHTML.trim())
+  const csv: string[][] = []
+  csv.push(header)
+  rows.slice(2).forEach(row => {
+    const cols = Array.from(row.querySelectorAll('td')).map(el => el.innerHTML.trim())
+    csv.push(cols)
+  })
+  return csv
 }
 
-function parse(str: string): TEventModel[] {
-  const mainTable = parseMainTableToCSV(str)
-  const events = createEvents(mainTable)
+function parseLokalTableToCSV(dom: JSDOM): string[][] {
+  const candidate = dom.window.document.querySelectorAll('tbody')
+  const tableName = Array.from(candidate).find(el => el.innerHTML.includes('Lokaler'))
+  if (!tableName) throw new CalendarParseException('Signature table not found!')
+  const rows = Array.from(tableName.querySelectorAll('tr'))
+  const header = Array.from(rows[1].querySelectorAll('th')).map(el => el.innerHTML.trim())
+  const csv: string[][] = []
+  csv.push(header)
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i].querySelectorAll('td')
+    const cols: string[] = []
+    for (let j = 0; j < row.length; j++) {
+      if (header[j] === 'Mazemap') {
+        const el = row[j].querySelector('a')
+        if (el) cols.push(el.href)
+        else cols.push('')
+        continue
+      }
+      cols.push(row[j].innerHTML.trim())
+    }
+    if (cols.length > 0) csv.push(cols)
+  }
+  return csv
+}
+
+function createEvents(mainCSV: string[][], signCSV: string[][],
+  lokalCSV: string[][], source: string): TEventModel[] {
+  const events: TEventModel[] = []
+
+  function signName(sign: string): string {
+    const row = signCSV.find(row => row[0].trim() === sign)
+    if (!row) return sign
+    return row[1] + ' ' + row[2]
+  }
+
+  function mazeMap(id: string): string {
+    const row = lokalCSV.find(row => row[0] === id)
+    if (!row) return ''
+    return `Mazemap: ${row[row.length - 1]}`
+  }
+
+  function formatLokal(id: string): string {
+    const row = lokalCSV.find(row => row[0] === id)
+    if (!row) return ''
+    return `Lokal: ${row[3]} Våning: ${row[2]}, ${row[1]}`
+  }
+
+  for (let i = 1; i < mainCSV.length; i++) {
+    const row = mainCSV[i]
+    const start = `${row[0]}:00.000+02:00`
+    const end   = `${row[1]}:00.000+02:00`
+
+    const title    = row[2].split(',')[0] + ', ' + row[7]
+    const location = row[5]
+    let description = ''
+    description    += row[2] + '\n'
+    description    += '\n'
+
+    description    += row[3] ? `Grupp: ${row[3]}\n`    : ''
+    description    += row[4] ? `Signatur: ${signName(row[4])}\n` : ''
+    description    += row[5] ? `Plats: ${row[5]}\n`    : ''
+    description    += row[7] ? `Moment: ${row[7]}\n`   : ''
+    description    += row[5] ? `${formatLokal(row[5])}\n` : ''
+    description    += '\n'
+
+    description    += row[8] ? `Updated: ${row[8]}\n` : ''
+    description    += `Cached: ${new Date().toISOString()}\n`
+    description    += `source: ${source}\n`
+    description    += row[5] ? `${mazeMap(row[5])}\n` : ''
+
+    const event: TEventModel = {
+      start: new Date(start),
+      end: new Date(end),
+      title,
+      description,
+      location,
+      url: source,
+    }
+
+    events.push(event)
+  }
+  return events
+}
+
+function parse(str: string, source: string): TEventModel[] {
+  const dom = new JSDOM(str)
+  const mainTable  = parseMainTableToCSV(dom)
+  const signTable  = parseSignTableToCSV(dom)
+  const lokalTable = parseLokalTableToCSV(dom)
+  const events = createEvents(mainTable, signTable, lokalTable, source)
   return events
 }
 

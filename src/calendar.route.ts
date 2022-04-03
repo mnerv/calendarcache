@@ -5,7 +5,7 @@ import { CalendarCreate, TCalendarCreate } from './calendar.model'
 
 import CalService from './calendar.service'
 import { CalendarException } from './calendars/exceptions'
-import { CalendarFile, getType, removeExtension } from './calendars/supported'
+import CalendarSupport, { CalendarFile } from './calendars/supported'
 
 const CalendarName = io.type({
   name: io.string,
@@ -33,8 +33,8 @@ const plugin: FastifyPluginAsync = async (app, _) => {
 
   app.get<{Params: TCalendarName}>('/:name', async (req, res) => {
     const { name: nameExt } = req.params
-    const name = removeExtension(nameExt)
-    const filetype = getType(nameExt)
+    const name = CalendarSupport.removeExtension(nameExt)
+    const filetype = CalendarSupport.getType(nameExt)
     const text = await CalService.load(filetype, name)
     switch (filetype) {
     case CalendarFile.ICS:

@@ -11,3 +11,10 @@ export class CalendarSupportException extends CalendarException {
     this.name = 'CalendarSupportException'
   }
 }
+
+export class CalendarParseException extends CalendarException {
+  constructor(message: string) {
+    super(message)
+    this.name = 'CalendarParseException'
+  }
+}
