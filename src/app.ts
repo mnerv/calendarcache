@@ -18,7 +18,7 @@ async function main() {
   })
 
   await app.register(fastifyCors, { origin: '*' })
-  await app.register(CalendarRoute, { prefix: '/beta/calendar' })
+  await app.register(CalendarRoute, { prefix: '/calendar' })
 
   app.get('/', (req, res) => {
     res.send({
