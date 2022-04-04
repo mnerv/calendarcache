@@ -151,11 +151,12 @@ function parseSignTableToCSV(dom: JSDOM): string[][] {
 function parseLokalTableToCSV(dom: JSDOM): string[][] {
   const candidate = dom.window.document.querySelectorAll('tbody')
   const tableName = Array.from(candidate).find(el => el.innerHTML.includes('Lokaler'))
-  if (!tableName) throw new CalendarParseException('Signature table not found!')
+  if (!tableName) return []
   const rows = Array.from(tableName.querySelectorAll('tr'))
   const header = Array.from(rows[1].querySelectorAll('th')).map(el => el.innerHTML.trim())
   const csv: string[][] = []
   csv.push(header)
+
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i].querySelectorAll('td')
     const cols: string[] = []
@@ -236,6 +237,7 @@ function parse(str: string, source: string): TEventModel[] {
   const mainTable  = parseMainTableToCSV(dom)
   const signTable  = parseSignTableToCSV(dom)
   const lokalTable = parseLokalTableToCSV(dom)
+
   const events = createEvents(mainTable, signTable, lokalTable, source)
   return events
 }
