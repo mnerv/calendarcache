@@ -136,7 +136,7 @@ function cleanMainTable(csv: string[][]): string[][] {
 function parseSignTableToCSV(dom: JSDOM): string[][] {
   const candidate = dom.window.document.querySelectorAll('tbody')
   const tableName = Array.from(candidate).find(el => el.innerHTML.includes('Signaturer'))
-  if (!tableName) throw new CalendarParseException('Signature table not found!')
+  if (!tableName) return []
   const rows = Array.from(tableName.querySelectorAll('tr'))
   const header = Array.from(rows[1].querySelectorAll('th')).map(el => el.innerHTML.trim())
   const csv: string[][] = []
@@ -201,23 +201,23 @@ function createEvents(mainCSV: string[][], signCSV: string[][],
     const start = `${row[0]}:00.000+02:00`
     const end   = `${row[1]}:00.000+02:00`
 
-    const title    = row[2].split(',')[0] + ', ' + row[7]
-    const location = row[5]
+    const title     = row[2].split(',')[0] + ', ' + row[7]
+    const location  = row[5]
     let description = ''
-    description    += row[2] + '\n'
-    description    += '\n'
+    description += row[2] + '\n'
+    description += '\n'
 
-    description    += row[3] ? `Grupp: ${row[3]}\n`    : ''
-    description    += row[4] ? `Signatur: ${signName(row[4])}\n` : ''
-    description    += row[5] ? `Plats: ${row[5]}\n`    : ''
-    description    += row[7] ? `Moment: ${row[7]}\n`   : ''
-    description    += row[5] ? `${formatLokal(row[5])}\n` : ''
-    description    += '\n'
+    description += row[3] ? `Grupp: ${row[3]}\n`    : ''
+    description += row[4] ? `Signatur: ${signName(row[4])}\n` : ''
+    description += row[5] ? `Plats: ${row[5]}\n`    : ''
+    description += row[7] ? `Moment: ${row[7]}\n`   : ''
+    description += row[5] ? `${formatLokal(row[5])}\n` : ''
+    description += '\n'
 
-    description    += row[8] ? `Updated: ${row[8]}\n` : ''
-    description    += `Cached: ${new Date().toISOString()}\n`
-    description    += `source: ${source}\n`
-    description    += row[5] ? `${mazeMap(row[5])}\n` : ''
+    description += row[8] ? `Updated: ${row[8]}\n` : ''
+    description += `Cached: ${new Date().toISOString()}\n`
+    description += `source: ${source}\n`
+    description += row[5] ? `${mazeMap(row[5])}\n` : ''
 
     const event: TEventModel = {
       start: new Date(start),

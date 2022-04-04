@@ -21,7 +21,7 @@ export async function createCalendar(name: string, url: string[]): Promise<void>
       throw new CalendarSupportException(`Calendar with url '${url}' is not supported`)
   }
 
-  const str = await redis.keys('calendars:*')
+  const str = await redis.keys('calendar:*')
   const id = Hash.toString(await Hash.hash(name))
 
   const found = str.findIndex(s => s === calendarKey(id))
