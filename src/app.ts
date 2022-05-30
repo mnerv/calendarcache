@@ -1,5 +1,5 @@
 import { fastify } from 'fastify'
-import fastifyCors from 'fastify-cors'
+import Cors from '@fastify/cors'
 import consola from 'consola'
 import { APP_HOST, APP_PORT } from './config/env'
 
@@ -17,7 +17,7 @@ async function main() {
     done() // pass an error if the authentication fails
   })
 
-  await app.register(fastifyCors, { origin: '*' })
+  await app.register(Cors, { origin: '*' })
   await app.register(CalendarRoute, { prefix: '/calendar' })
 
   app.get('/', (req, res) => {
