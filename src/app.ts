@@ -10,13 +10,6 @@ async function main() {
     ignoreTrailingSlash: true
   })
 
-  app.decorate('asyncVerifyAdmin', async (request: any, reply: any, done: any) => {
-    reply.status(401).send({
-      error: 'Unauthorized',
-    })
-    done() // pass an error if the authentication fails
-  })
-
   await app.register(Cors, { origin: '*' })
   await app.register(CalendarRoute, { prefix: '/calendar' })
 

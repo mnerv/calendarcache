@@ -1,25 +1,25 @@
-# ┃ Outputs
-# ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ #
-
-## NodeJS
+# NodeJS
 node_modules
 
-## Builds
+# Builds
 data
 build
 
-## Log files
+# Log files
 *.log
 *.tsbuildinfo
-.env
 
-## Visual Studio Code
+# Enviroment variables
+.env
+.env.dev
+
+!docs/.env
+!docs/.env.dev
+
+# Visual Studio Code
 .vscode
 
-# ┃ System Files
-# ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ #
-
-## macOS
+# macOS
 .DS_Store
 .AppleDouble
 .LSOverride
