@@ -178,9 +178,9 @@ function createEvents(mainCSV: string[][], signCSV: string[][],
   lokalCSV: string[][], source: string): TEventModel[] {
   const events: TEventModel[] = []
 
-  function signName(sign: string): string {
-    const row = signCSV.find(row => row[0].trim() === sign)
-    if (!row) return sign
+  function signName(signature: string): string {
+    const row = signCSV.find(row => row[0].trim() === signature)
+    if (!row) return signature
     return row[1] + ' ' + row[2]
   }
 
@@ -214,8 +214,8 @@ function createEvents(mainCSV: string[][], signCSV: string[][],
     description += row[5] ? `${formatLokal(row[5])}\n` : ''
     description += '\n'
 
-    description += row[8] ? `Updated: ${row[8]}\n` : ''
-    description += `Cached: ${new Date().toISOString()}\n`
+    description += row[8] ? `updated: ${row[8]}\n` : ''
+    description += `cached: ${new Date().toISOString()}\n`
     description += `source: ${source}\n`
     description += row[5] ? `${mazeMap(row[5])}\n` : ''
 

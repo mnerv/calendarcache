@@ -6,7 +6,7 @@ export function calendarKey(id: string): string {
 
 export const CalendarCreate = io.type({
   name: io.string,
-  url: io.union([io.string, io.array(io.string)]),
+  url:  io.union([io.string, io.array(io.string)]),
 })
 export type TCalendarCreate = io.TypeOf<typeof CalendarCreate>
 
