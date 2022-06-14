@@ -1,13 +1,18 @@
 import { fastify } from 'fastify'
 import Cors from '@fastify/cors'
 import consola from 'consola'
-import { APP_HOST, APP_PORT } from './config/env'
+import { APP_HOST, APP_PORT, APP_VERSION } from './config/env'
 
 import CalendarRoute from './calendar.route'
 
 async function main() {
   const app = fastify({
-    ignoreTrailingSlash: true
+    ignoreTrailingSlash: true,
+    logger: {
+      transport: {
+        target: 'pino-pretty',
+      }
+    }
   })
 
   await app.register(Cors, { origin: '*' })
@@ -15,13 +20,17 @@ async function main() {
 
   app.get('/', (req, res) => {
     res.send({
-      random: Math.random(),
+      time: Date.now(),
+      version: `${APP_VERSION}`,
       message: 'Hello, World!'
     })
   })
 
   try {
-    const address = await app.listen(APP_PORT, APP_HOST)
+    const address = await app.listen({
+      host: APP_HOST,
+      port: APP_PORT
+    })
     consola.ready({
       message: `Listening: ${address}`,
       badge: true
