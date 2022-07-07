@@ -14,5 +14,5 @@ RUN pnpm clean
 RUN pnpm build
 
 EXPOSE 8080
-CMD ["node", "."]
+CMD ["pnpm", "start"]
 
