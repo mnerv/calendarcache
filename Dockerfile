@@ -1,14 +1,18 @@
 FROM node:18.3.0-buster
 WORKDIR /app
 
-COPY package.json .
-COPY yarn.lock .
+# Setup pnpm
+RUN curl -sL https://unpkg.com/@pnpm/self-installer | node
 
-RUN yarn --frozen-lockfile
+COPY package.json .
+COPY pnpm-lock.yaml .
+
+RUN pnpm i --frozen-lockfile
 COPY . .
-RUN yarn test:eslint
-RUN yarn clean
-RUN yarn build
+RUN pnpm test:eslint
+RUN pnpm clean
+RUN pnpm build
 
 EXPOSE 8080
-CMD ["yarn", "start"]
+CMD ["node", "."]
+
