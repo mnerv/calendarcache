@@ -1,17 +1,20 @@
 env:
+  node: true
   browser: true
   es2021: true
 extends:
   - 'eslint:recommended'
   - 'plugin:@typescript-eslint/recommended'
-  - 'plugin:json/recommended'
 parser: '@typescript-eslint/parser'
 parserOptions:
   ecmaVersion: 12
   sourceType: module
 plugins:
   - '@typescript-eslint'
-  - 'json'
+ignorePatterns:
+  - 'build'
+  - 'data'
+  - 'node_modules'
 rules:
   indent:
     - error
@@ -23,22 +26,32 @@ rules:
   quotes:
     - error
     - single
+    - allowTemplateLiterals: true
+      avoidEscape: true
   '@typescript-eslint/no-unused-vars':
     - warn
     - vars: all
       args: none
+      varsIgnorePattern: React
+  '@typescript-eslint/no-empty-function':
+    - error
   no-unused-vars:
     - warn
     - vars: all
       args: none
       ignoreRestSiblings: false
       caughtErrors: none
+      varsIgnorePattern: React
   semi:
     - error
     - never
   max-len:
     - error
     - code: 120
+      ignoreComments: true
+      ignoreStrings: true
+      ignoreUrls: true
+      ignoreRegExpLiterals: true
   eol-last:
     - error
     - always
@@ -68,31 +81,40 @@ rules:
     - error
     - ImportDeclaration:
         multiline: true
-        minProperties: 4
+        minProperties: 3
       ExportDeclaration:
         multiline: true
         minProperties: 3
   comma-spacing:
     - error
-    - before: false
-      after: true
+    - before:
+        false
+      after:
+        true
   spaced-comment:
     - error
     - always
     - exceptions:
-        - '-'
-        - '+'
+      - '-'
+      - '+'
       block:
         balanced: true
+      markers:
+        - '/'
+        - '#'
+        - '-'
+        - '='
   no-trailing-spaces:
     - error
   no-warning-comments:
     - warn
     - terms:
-        - TODO
-        - FIXME
+      - TODO
+      - FIXME
       location: anywhere
   no-multiple-empty-lines:
     - error
     - max: 1
       maxEOF: 1
+  no-unneeded-ternary:
+    - warn

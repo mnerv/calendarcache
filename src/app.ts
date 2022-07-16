@@ -1,7 +1,13 @@
 import { fastify } from 'fastify'
 import Cors from '@fastify/cors'
 import consola from 'consola'
-import { APP_HOST, APP_PORT, APP_VERSION } from './config/env'
+import {
+  APP_HOST,
+  APP_PORT,
+  APP_VERSION
+} from './config/env'
+
+// import docs from './docs'
 
 import CalendarRoute from './calendar.route'
 
@@ -16,6 +22,7 @@ async function main() {
   })
 
   await app.register(Cors, { origin: '*' })
+  // await docs(app)
   await app.register(CalendarRoute, { prefix: '/calendar' })
 
   app.get('/', (req, res) => {
