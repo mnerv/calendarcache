@@ -1,6 +1,6 @@
 {
   "name": "calendarsub",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "mnerv",
   "description": "calendar cache server api.",
   "main": "build/app.js",
