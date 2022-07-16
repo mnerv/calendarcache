@@ -9,6 +9,24 @@ function dateToStr(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
+function parseKursValue(dom: JSDOM): string {
+  const firstTr = dom.window.document.querySelector('tr') as HTMLTableRowElement
+  if (!firstTr) throw new CalendarParseException('Missing first tr in table')
+
+  const tdsInFirstTr = Array.from(firstTr.querySelectorAll('td'))
+  const tableWithSchemaName = tdsInFirstTr.find(td => {
+    return td.innerHTML.includes('Schema')
+  })
+  if (!tableWithSchemaName) throw new CalendarParseException('Missing \'Schema\' value in table')
+  const textContent = tableWithSchemaName.textContent
+  if (!textContent) throw new CalendarParseException('Missing text content in table')
+  // // Hack to split by newline and get the second part of the string
+  const splitRows = textContent.split('\n').filter(s => s.trim() !== '').map(s => s.trim())
+  if (splitRows.length < 4) throw new CalendarParseException('Missing fourth row in table to get the course name')
+  const kursName = `${splitRows[2]} ${splitRows[3]}`
+  return kursName
+}
+
 function parseMainTableToCSV(dom: JSDOM): string[][] {
   const mainTable = dom.window.document.querySelector('.schemaTabell') as Element
   const mainRows = mainTable.querySelectorAll('tr')
@@ -175,8 +193,10 @@ function parseLokalTableToCSV(dom: JSDOM): string[][] {
 }
 
 function createEvents(mainCSV: string[][], signCSV: string[][],
-  lokalCSV: string[][], source: string): TEventModel[] {
+  lokalCSV: string[][], source: string, schemaName: string): TEventModel[] {
   const events: TEventModel[] = []
+  // FIXME: Handle if there's no second column in the 'kurs name'
+  const kursName = schemaName.split(',')[1].trim()
 
   function signName(signature: string): string {
     const row = signCSV.find(row => row[0].trim() === signature)
@@ -201,10 +221,12 @@ function createEvents(mainCSV: string[][], signCSV: string[][],
     const start = `${row[0]}:00.000+02:00`
     const end   = `${row[1]}:00.000+02:00`
 
-    const title     = row[2].split(',')[0] + ', ' + row[7]
+    // FIXME: Clean up the title
+    const titleCandidate = row[2].split(',')[0] + ', ' + row[7]
+    const title     = titleCandidate.startsWith(',') ? kursName + titleCandidate : titleCandidate
     const location  = row[5]
     let description = ''
-    description += row[2] + '\n'
+    description += row[2] == '' ? schemaName : row[2] + '\n'
     description += '\n'
 
     description += row[3] ? `Grupp: ${row[3]}\n`    : ''
@@ -237,8 +259,8 @@ function parse(str: string, source: string): TEventModel[] {
   const mainTable  = parseMainTableToCSV(dom)
   const signTable  = parseSignTableToCSV(dom)
   const lokalTable = parseLokalTableToCSV(dom)
-
-  const events = createEvents(mainTable, signTable, lokalTable, source)
+  const schemaName = parseKursValue(dom)
+  const events = createEvents(mainTable, signTable, lokalTable, source, schemaName)
   return events
 }
 
