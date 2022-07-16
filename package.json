@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:mnerv/calendarsub.git"
+    "url": "git@github.com:mnerv/calendarcache.git"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
