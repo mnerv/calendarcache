@@ -34,6 +34,22 @@ Run the development server
 yarn dev
 ```
 
+### Tools
+
+Use `redis-cli` with `docker`.
+
+```
+docker exec -it {redis-container-name} redis-cli
+```
+
+Display logs from container
+
+```
+docker logs {container-name}
+```
+
+`--follow`: use this flag to keep following new logs.
+
 ## Production
 
 The configurable environment variable can be found in [sample.env](docs/sample.env) file. The value on the right indicate the defaults.
