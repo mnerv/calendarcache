@@ -1,5 +1,5 @@
 {
-  "name": "calendarsub",
+  "name": "calendarcache",
   "version": "0.2.2",
   "author": "mnerv",
   "description": "calendar cache server api.",
