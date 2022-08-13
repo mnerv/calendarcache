@@ -121,7 +121,7 @@ function cleanMainTable(csv: string[][]): string[][] {
         signature = col
         break
       case 'Lokal':
-        location = col
+        location = col.replaceAll('&nbsp;', '')
         break
       case 'Hjälpm.':
         help = col
