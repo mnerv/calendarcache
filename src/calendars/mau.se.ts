@@ -9,7 +9,11 @@ function dateToStr(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
-function parseKursValue(dom: JSDOM): string {
+interface ISchemaName {
+  isCourse: boolean
+  value: string
+}
+function parseKursValue(dom: JSDOM): ISchemaName {
   const firstTr = dom.window.document.querySelector('tr') as HTMLTableRowElement
   if (!firstTr) throw new CalendarParseException('Missing first tr in table')
 
@@ -24,7 +28,10 @@ function parseKursValue(dom: JSDOM): string {
   const splitRows = textContent.split('\n').filter(s => s.trim() !== '').map(s => s.trim())
   if (splitRows.length < 4) throw new CalendarParseException('Missing fourth row in table to get the course name')
   const kursName = `${splitRows[2]} ${splitRows[3]}`
-  return kursName
+  return {
+    isCourse: textContent.includes('Kurs:'),
+    value: kursName
+  }
 }
 
 function parseMainTableToCSV(dom: JSDOM): string[][] {
@@ -193,10 +200,10 @@ function parseLokalTableToCSV(dom: JSDOM): string[][] {
 }
 
 function createEvents(mainCSV: string[][], signCSV: string[][],
-  lokalCSV: string[][], source: string, schemaName: string): TEventModel[] {
+  lokalCSV: string[][], source: string, schemaName: ISchemaName): TEventModel[] {
   const events: TEventModel[] = []
   // FIXME: Handle if there's no second column in the 'kurs name'
-  const kursName = schemaName.split(',')[1].trim()
+  const kursName = schemaName.value.split(',')[1].trim()
 
   function signName(signature: string): string {
     const row = signCSV.find(row => row[0].trim() === signature)
@@ -216,6 +223,18 @@ function createEvents(mainCSV: string[][], signCSV: string[][],
     return `Lokal: ${row[3]} Våning: ${row[2]}, ${row[1]}`
   }
 
+  function createTitle(title: string): string {
+    if (schemaName.isCourse) return kursName
+    else if (title.startsWith(',')) return kursName + title
+    else return title
+  }
+
+  function createLongTitle(title: string): string {
+    if (schemaName.isCourse) return title + ' - ' + kursName
+    else if (title == '') return kursName
+    else return title
+  }
+
   for (let i = 1; i < mainCSV.length; i++) {
     const row = mainCSV[i]
     const start = `${row[0]}:00.000+02:00`
@@ -223,10 +242,10 @@ function createEvents(mainCSV: string[][], signCSV: string[][],
 
     // FIXME: Clean up the title
     const titleCandidate = row[2].split(',')[0] + ', ' + row[7]
-    const title     = titleCandidate.startsWith(',') ? kursName + titleCandidate : titleCandidate
+    const title          = createTitle(titleCandidate)
     const location  = row[5]
     let description = ''
-    description += row[2] == '' ? schemaName : row[2] + '\n'
+    description += createLongTitle(row[2]) + '\n'  // Long title
     description += '\n'
 
     description += row[3] ? `Grupp: ${row[3]}\n`    : ''
