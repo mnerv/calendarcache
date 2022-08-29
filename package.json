@@ -1,6 +1,6 @@
 {
   "name": "calendarcache",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "mnerv",
   "description": "calendar cache server api.",
   "main": "build/app.js",

@@ -237,15 +237,16 @@ function createEvents(mainCSV: string[][], signCSV: string[][],
 
   for (let i = 1; i < mainCSV.length; i++) {
     const row = mainCSV[i]
+    // Hardcode timezone to +02:00
     const start = `${row[0]}:00.000+02:00`
     const end   = `${row[1]}:00.000+02:00`
 
-    // FIXME: Clean up the title
-    const titleCandidate = row[2].split(',')[0] + ', ' + row[7]
-    const title          = createTitle(titleCandidate)
+    const titleCandidate = row[2].split(',')[0]
+    const title          = createTitle(titleCandidate) + ', ' + row[7]
     const location  = row[5]
     let description = ''
-    description += createLongTitle(row[2]) + '\n'  // Long title
+
+    description += createLongTitle(row[2]) + ', ' + row[7] + '\n'  // Long title
     description += '\n'
 
     description += row[3] ? `Grupp: ${row[3]}\n`    : ''
