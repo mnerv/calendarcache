@@ -93,7 +93,7 @@ export async function loadCalendar(type: CalendarFile, name: string): Promise<st
   if (!str) throw new CalendarException(`Calendar ${name} not found`)
   const json = JSON.parse(str)
   const decode = CalendarModel.decode(json)
-  if (isLeft(decode))
+  if (isLeft(decode))  // TODO: Handle when CalendarModel is changed
     throw new CalendarException(`Error decoding calendar data ${name} not found`)
 
   const calendar = decode.right
