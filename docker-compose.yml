@@ -12,7 +12,7 @@ services:
       - ./data:/app/data
       - ./.env:/app/.env
 
-  cache:
+  store:
     image: redis:${REDIS_TAG:-latest}
     restart: always
     volumes:
