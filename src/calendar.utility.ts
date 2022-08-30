@@ -5,7 +5,7 @@ import { isRight } from 'fp-ts/lib/Either'
 
 import redis from './config/redis'
 import Hash from './config/hash'
-import { CACHE_TIME } from './config/env'
+import { CACHE_TIME, APP_VERSION } from './config/env'
 import { TEventModel, EventModel } from './calendar.model'
 import CalSupport, { Name } from './calendars/supported'
 import { CalendarException } from './calendars/exceptions'
@@ -47,7 +47,18 @@ async function validateEvents(raw: string): Promise<TEventModel[]> {
 export async function loadEvent(source: string): Promise<TEventModel[]> {
   const id = Hash.toString(await Hash.hash(source))
   const str = await redis.get(`cache:events:${id}`)
-  if (str) return await validateEvents(str)
+
+  if (str) {
+    const evts = await validateEvents(str)
+      .then(evs => evs)
+      .catch(err => {
+        consola.error(err)
+        return null
+      })
+    if (evts) return evts
+    else await redis.del(`cache:events:${id}`)
+  }
+
   try {
     const live = await loadEventsLive(source)
     const jsonStr = JSON.stringify(live)
@@ -95,6 +106,10 @@ export async function convertToICS(events: TEventModel[]): Promise<string> {
       url,
       status: 'CONFIRMED',
       startInputType: 'utc',
+      endInputType: 'utc',
+      startOutputType: 'utc',
+      endOutputType: 'utc',
+      productId: `calendarcache/${APP_VERSION}`
     } as ics.EventAttributes
   }))
 
