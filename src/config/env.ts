@@ -11,7 +11,7 @@ export const APP_PORT = parseInt(env.APP_PORT ?? '8080')
 export const APP_HOST = env.APP_HOST          ?? '0.0.0.0'
 
 export const REDIS_PORT = parseInt(env.REDIS_PORT ?? '6379')
-export const REDIS_HOST = env.REDIS_HOST          ?? 'cache'
+export const REDIS_HOST = env.REDIS_HOST          ?? 'store'
 
 export const ROOT_DIR    = path.resolve()
 export const DATA_PATH   = path.join(ROOT_DIR, 'data')
