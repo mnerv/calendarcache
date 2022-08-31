@@ -2,14 +2,6 @@ import { JSDOM } from 'jsdom'
 import { TEventModel } from '../calendar.model'
 import { CalendarException, CalendarParseException } from './exceptions'
 
-// FIXME: Svensk tid 2022 hardcode, Europe/Stockholm
-// Sommartid normal tid, den har "daylight saving", true för sommartid, falsk för vintertid
-function hasDaylightSaving(date: Date): boolean {
-  const mar = new Date(date.getFullYear(), 2, 27).getTimezoneOffset()
-  const oct = new Date(date.getFullYear(), 9, 30).getTimezoneOffset()
-  return Math.max(mar, oct) !== date.getTimezoneOffset()
-}
-
 function dateToStr(date: Date): string {
   const year = date.getFullYear()
   const month = `${date.getMonth() + 1}`.padStart(2, '0')
@@ -249,11 +241,8 @@ function createEvents(mainCSV: string[][], signCSV: string[][],
 
   for (let i = 1; i < mainCSV.length; i++) {
     const row = mainCSV[i]
-    // I hate this with every fiber of my existence
-    const isStartDST = hasDaylightSaving(new Date(`${row[0]}:00.000+02:00`))
-    const isEndDST   = hasDaylightSaving(new Date(`${row[1]}:00.000+02:00`))
-    const start = `${row[0]}:00.000+${isStartDST ? '02:00' : '01:00'}`
-    const end   = `${row[1]}:00.000+${isEndDST   ? '02:00' : '01:00'}`
+    const start = `${row[0]}`
+    const end   = `${row[1]}`
 
     const titleCandidate = row[2].split(',')[0]
     const title          = createTitle(titleCandidate) + ', ' + row[7]
@@ -261,7 +250,7 @@ function createEvents(mainCSV: string[][], signCSV: string[][],
     let description = ''
 
     description += createLongTitle(row[2]) + ', ' + row[7] + '\n'  // Long title
-    description += `${row[0].split('T')[1]} - ${row[1].split('T')[1]}\n\n`
+    description += `${row[0].split('T')[0]}, ${row[0].split('T')[1]} - ${row[1].split('T')[1]}\n\n`
 
     description += row[3] ? `Grupp: ${row[3]}\n`    : ''
     description += row[4] ? `Signatur: ${signName(row[4])}\n` : ''
