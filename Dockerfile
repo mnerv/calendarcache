@@ -2,7 +2,7 @@ FROM node:18.3.0-buster
 WORKDIR /app
 
 # Setup pnpm
-RUN curl -sL https://unpkg.com/@pnpm/self-installer | node
+RUN curl -sL https://unpkg.com/@pnpm/self-installer | node - add --global pnpm
 
 COPY package.json .
 COPY pnpm-lock.yaml .
