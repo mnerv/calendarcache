@@ -43,7 +43,6 @@ async function validateEvents(raw: string): Promise<TEventModel[]> {
   return events
 }
 
-// TODO: Add support for archiving events
 export async function loadEvent(source: string): Promise<TEventModel[]> {
   const id = Hash.toString(await Hash.hash(source))
   const str = await redis.get(`cache:events:${id}`)
@@ -59,6 +58,7 @@ export async function loadEvent(source: string): Promise<TEventModel[]> {
     else await redis.del(`cache:events:${id}`)
   }
 
+  // TODO: Add support for archiving events
   try {
     const live = await loadEventsLive(source)
     const jsonStr = JSON.stringify(live)

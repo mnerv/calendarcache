@@ -1,7 +1,24 @@
 import * as io from 'io-ts'
 
+// calendar:{id}
+// id: CalendarModel::name SHA256 hash
+
+// events:{id}
+// id: CalendarModel::source[index] hash
+// cache:events:{id}
+// id: CalendarModel::source[index] hash
+
+// history:events:{id}
+// id: CalendarModel::source[index] hash
+// - Store historic records
+
+// archive:events:#{CalendarModel::source[index]}:[id]
+
 export function calendarKey(id: string): string {
   return `calendar:${id}`
+}
+export function eventsKey(id: string): string {
+  return `events:${id}`
 }
 
 export const CalendarCreate = io.type({
@@ -38,6 +55,16 @@ export const EventModel = io.type({
   url:         io.union([io.string, io.null]),
 })
 export type TEventModel = io.TypeOf<typeof EventModel>
+
+export const EventsHistory = io.type({
+  create: IODate,
+  update: IODate,
+  archives: io.array(io.type({
+    time: io.number,
+    id:   io.string
+  }))
+})
+export type TEventsHistory = io.TypeOf<typeof EventsHistory>
 
 export default {
   key: calendarKey,

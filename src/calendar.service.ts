@@ -1,10 +1,9 @@
 import { isLeft } from 'fp-ts/lib/Either'
 import redis from './config/redis'
 import { DELETE_TIME } from './config/env'
-import {
+import CModel, {
   TCalendarModel,
   CalendarModel,
-  calendarKey,
 } from './calendar.model'
 import Hash from './config/hash'
 
@@ -13,7 +12,7 @@ import {
   CalendarException,
   CalendarSupportException
 } from './calendars/exceptions'
-import CalUtility from './calendar.utility'
+import CalendarUtility from './calendar.utility'
 
 export async function createCalendar(name: string, url: string[]): Promise<void> {
   for (const u of url) {
@@ -24,7 +23,7 @@ export async function createCalendar(name: string, url: string[]): Promise<void>
   const str = await redis.keys('calendar:*')
   const id = Hash.toString(await Hash.hash(name))
 
-  const found = str.findIndex(s => s === calendarKey(id))
+  const found = str.findIndex(s => s === CModel.key(id))
   if (found !== -1)
     throw new CalendarException(`Calendar ${name} already exists`)
 
@@ -35,12 +34,12 @@ export async function createCalendar(name: string, url: string[]): Promise<void>
     created: new Date(),
     updated: new Date(),
   }
-  await redis.set(calendarKey(id), JSON.stringify(calendar))
+  await redis.set(CModel.key(id), JSON.stringify(calendar))
 }
 
 export async function readCalendar(name: string): Promise<object> {
   const id = Hash.toString(await Hash.hash(name))
-  const str = await redis.get(calendarKey(id))
+  const str = await redis.get(CModel.key(id))
   if (str === null) return Promise.reject(new Error('Calendar not found'))
   const json = JSON.parse(str)
   return Promise.resolve(json)
@@ -76,20 +75,20 @@ export async function listCalendarInfo(): Promise<TCalendarModel[]> {
 }
 
 export async function deleteCalendar(id: string): Promise<void> {
-  const str = await redis.getdel(calendarKey(id))
+  const str = await redis.getdel(CModel.key(id))
   if (!str) return Promise.reject(new CalendarException(`Calendar ${id} not found`))
-  await redis.setex(calendarKey(id), DELETE_TIME, str)
+  await redis.setex(CModel.key(id), DELETE_TIME, str)
 }
 
 export async function cancelDeleteCalendar(id: string): Promise<void> {
-  const str = await redis.get(calendarKey(id))
+  const str = await redis.get(CModel.key(id))
   if (!str) return Promise.reject(new CalendarException(`Calendar ${id} not found`))
-  await redis.set(calendarKey(id), str)
+  await redis.set(CModel.key(id), str)
 }
 
-export async function loadCalendar(type: CalendarFile, name: string): Promise<string> {
+export async function loadCalendarEvents(type: CalendarFile, name: string): Promise<string> {
   const id = Hash.toString(await Hash.hash(name))
-  const str = await redis.get(calendarKey(id))
+  const str = await redis.get(CModel.key(id))
   if (!str) throw new CalendarException(`Calendar ${name} not found`)
   const json = JSON.parse(str)
   const decode = CalendarModel.decode(json)
@@ -97,11 +96,11 @@ export async function loadCalendar(type: CalendarFile, name: string): Promise<st
     throw new CalendarException(`Error decoding calendar data ${name} not found`)
 
   const calendar = decode.right
-  const events = await CalUtility.loadEvents(calendar.source)
+  const events = await CalendarUtility.loadEvents(calendar.source)
 
   switch (type) {
   case CalendarFile.ICS:
-    return CalUtility.toICS(events)
+    return CalendarUtility.toICS(events)
   case CalendarFile.JSON:
     return JSON.stringify(events)
   default:
@@ -117,5 +116,5 @@ export default {
   list: listCalendar,
   listInfo: listCalendarInfo,
   delete: deleteCalendar,
-  load: loadCalendar,
+  loadEvents: loadCalendarEvents,
 }
